@@ -1,0 +1,4 @@
+[submodule "library/LovyanGFX"]
+	path = library/LovyanGFX
+	url = https://github.com/lovyan03/LovyanGFX.git
+	branch = master
