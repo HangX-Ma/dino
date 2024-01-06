@@ -15,7 +15,7 @@ add_definitions(-DLGFX_SDL)
 # Collect LGFX core files and user files
 # NOTE: CONFIGURE_DEPENDS limit the build system dependance, we need to add all used source file here!
 file(GLOB LGFX_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS
-    src/*.cpp
+    simulator/*.cpp
     library/LovyanGFX/src/lgfx/Fonts/efont/*.c
     library/LovyanGFX/src/lgfx/Fonts/IPA/*.c
     library/LovyanGFX/src/lgfx/utility/*.c
@@ -25,13 +25,18 @@ file(GLOB LGFX_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS
     library/LovyanGFX/src/lgfx/v1/panel/Panel_FrameBufferBase.cpp
     library/LovyanGFX/src/lgfx/v1/platforms/sdl/*.cpp
     )
+file(GLOB DINO_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/include/dino/*.cpp)
 
-add_executable(${PROJECT_NAME} ${LGFX_SRCS})
+add_subdirectory(library/spdlog)
+
+add_executable(${PROJECT_NAME} ${LGFX_SRCS} ${DINO_SRCS})
 target_include_directories(
     ${PROJECT_NAME} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/simulator
     ${CMAKE_CURRENT_SOURCE_DIR}/library/LovyanGFX/src
     )
+target_link_libraries(${PROJECT_NAME} spdlog)
 
 find_package(SDL2 REQUIRED SDL2)
 if (SDL2_FOUND)

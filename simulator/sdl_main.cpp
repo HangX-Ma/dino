@@ -1,16 +1,17 @@
 #include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
+#include "dino/state.h"
+
 #if defined(SDL_h_)
 
-void setup();
-void loop();
+static dino::GameState game;
 
 // clang-format off
 __attribute__((weak))
 int userFunc(bool *running)
 {
-    setup();
+    game.setup();
     do {
-        loop();
+        game.loop();
     }
     while (*running);
     return 0;
