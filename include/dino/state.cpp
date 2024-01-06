@@ -26,6 +26,7 @@ void GameState::setup()
     // init configuration
     render_cfg_.game_speed = 16;
     render_cfg_.update_interval = render_cfg_.game_speed * 100;
+    render_cfg_.score_diff = 100;
     render_cfg_.screen_width = lcd_->width();
     render_cfg_.screen_height = lcd_->height();
     render_cfg_.last_ts = 0;
@@ -42,6 +43,7 @@ void GameState::loop()
         renderGround();
         renderClouds();
         renderFPS();
+        renderScore();
         renderDino();
         updateCanvas();
         render_cfg_.last_ts = Utils::getTimestamp();
@@ -147,6 +149,7 @@ void GameState::renderFPS()
 void GameState::renderDino() { dino_.update(screen_, render_cfg_, action_); }
 void GameState::renderGround() { ground_.update(screen_, render_cfg_); }
 void GameState::renderClouds() { clouds_.update(screen_, render_cfg_); }
+void GameState::renderScore() { score_.update(screen_, render_cfg_); }
 
 void GameState::scanKeyboard()
 {

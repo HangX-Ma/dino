@@ -6,6 +6,7 @@
 #include "dino/ground.h"
 #include "dino/lv_anim.h"
 #include "dino/random.h"
+#include "dino/score.h"
 #include "dino/utils.h"
 #include "dino/fps.h"
 
@@ -30,6 +31,7 @@ private:
     Dino dino_;
     Ground ground_;
     Clouds clouds_;
+    Score score_;
 
 private:
     void switchBackground();
@@ -41,6 +43,7 @@ private:
     void renderDino();
     void renderGround();
     void renderClouds();
+    void renderScore();
 
     void clearCanvas() { screen_->clear(); }
     void updateCanvas() { screen_->pushSprite(0, 0); }

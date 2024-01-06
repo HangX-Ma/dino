@@ -39,6 +39,7 @@ using RenderConfig_t = struct RenderConfig
 
     uint16_t game_speed;
     uint16_t update_interval;
+    uint16_t score_diff;
 
     int background_color;
     int prev_background_color;
