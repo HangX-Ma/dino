@@ -5,7 +5,7 @@
 #include "dino/utils.h"
 #include "assets/clouds.h"
 #include "lgfx/v1/LGFX_Sprite.hpp"
-#include "spdlog/spdlog.h"
+#include "lgfx/v1/misc/enum.hpp"
 
 namespace dino
 {
@@ -23,7 +23,7 @@ class Clouds
 {
 
 public:
-    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, int game_speed)
+    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg)
     {
         // generate new cloud
         if (Utils::getTimestamp() - clouds_tick_ > 8000) {
@@ -33,22 +33,20 @@ public:
             clouds_pos_.emplace_back(
                 Position_t{static_cast<int32_t>(render_cfg.screen_width / clouds_cfg_.zoom_x), y});
             clouds_tick_ = Utils::getTimestamp();
-            spdlog::info("add cloud, id={}", clouds_pos_.size());
         }
 
         for (size_t i = 0; i < clouds_pos_.size(); i += 1) {
-            clouds_pos_[i].x -= game_speed / 8.0;
+            clouds_pos_[i].x -= render_cfg.game_speed / 8.0;
             // remove invalid one
             if (clouds_pos_[i].x < 0 - clouds_cfg_.width) {
                 auto cloud_iter = clouds_pos_.begin() + i;
                 clouds_pos_.erase(cloud_iter);
-                spdlog::info("erase cloud, id={}", i);
             }
 
             screen->pushGrayscaleImageRotateZoom(
                 clouds_pos_[i].x, clouds_pos_[i].y, clouds_pos_[i].x, clouds_pos_[i].y, 0,
                 clouds_cfg_.zoom_x, clouds_cfg_.zoom_y, clouds_cfg_.width, clouds_cfg_.height,
-                image_data_clouds, clouds_cfg_.depth, render_cfg.prev_background_color,
+                image_data_clouds, clouds_cfg_.depth, lgfx::colors::TFT_DARKGRAY,
                 render_cfg.background_color);
         }
     }

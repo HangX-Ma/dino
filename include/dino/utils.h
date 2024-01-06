@@ -3,6 +3,7 @@
 
 #include "SDL2/SDL_timer.h"
 #include "lgfx/v1/misc/enum.hpp"
+#include <string>
 
 namespace dino
 {
@@ -20,12 +21,24 @@ public:
     }
 };
 
+enum class Action
+{
+    NOTHING,
+    JUMP,
+    BEND_OVER,
+    RESTART,
+};
+const std::string DINO_ACTION_STR[] = {"NOTHING", "JUMP", "BEND_OVER", "RESTART"};
+
 using RenderConfig_t = struct RenderConfig
 {
     int32_t screen_width;
     int32_t screen_height;
     double padding_ratio; // range(0, 1.0)
     int32_t last_ts;      // timestamp
+
+    uint16_t game_speed;
+    uint16_t update_interval;
 
     int background_color;
     int prev_background_color;

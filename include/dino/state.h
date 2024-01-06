@@ -44,6 +44,7 @@ private:
 
     void clearCanvas() { screen_->clear(); }
     void updateCanvas() { screen_->pushSprite(0, 0); }
+    void scanKeyboard();
 
 private:
     LGFX *lcd_{nullptr};
@@ -52,12 +53,13 @@ private:
     RenderConfig_t render_cfg_;
 
 private:
-    uint16_t game_speed_;
     // background
     bool night_mode_{false};
     lvgl::LVAnim bg_anim_;
     uint32_t bg_anim_duration_{1000};
     uint32_t bg_tick_;
+    // keyboard
+    Action action_{Action::NOTHING};
 };
 
 } // namespace dino

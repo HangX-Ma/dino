@@ -20,13 +20,16 @@ using GroundConfig_t = struct GroundConfig
 class Ground
 {
 public:
-    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, int game_speed)
+    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg)
     {
-        pos_.x -= game_speed;
-        if (pos_.x < -(ground_cfg_.width * ground_cfg_.zoom_x - render_cfg.screen_width)) {
-            pos_.x = 0;
+        if (render_cfg.last_ts - ground_tick_ > render_cfg.update_interval / render_cfg.game_speed)
+        {
+            pos_.x -= render_cfg.game_speed;
+            if (pos_.x < -(ground_cfg_.width * ground_cfg_.zoom_x - render_cfg.screen_width)) {
+                pos_.x = 0;
+            }
+            ground_tick_ = render_cfg.last_ts;
         }
-
         pos_.y = render_cfg.getBottomPaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2 + 64;
         screen->pushGrayscaleImageRotateZoom(
             pos_.x, pos_.y, pos_.x, pos_.y, 0, ground_cfg_.zoom_x, ground_cfg_.zoom_y,
@@ -37,6 +40,7 @@ public:
 private:
     GroundConfig_t ground_cfg_;
     Position_t pos_{0, 0};
+    uint32_t ground_tick_{0};
 };
 
 } // namespace dino

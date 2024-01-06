@@ -2,7 +2,7 @@
 cmake_minimum_required (VERSION 3.8)
 
 # project name
-project(LGFX_SDL LANGUAGES CXX C)
+project(dino LANGUAGES CXX C)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
         set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose Release or Debug" FORCE)

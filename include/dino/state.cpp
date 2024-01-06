@@ -3,10 +3,9 @@
 #include "dino/state.h"
 #include "lgfx/v1/misc/enum.hpp"
 
-#define PIN_LEFT 39
-#define PIN_DOWN 38
-#define PIN_RIGHT 37
-#define PIN_UP 36
+#define BTN_DOWN 38  // bend over
+#define BTN_RIGHT 37 // restart
+#define BTN_UP 36    // jump
 
 namespace dino
 {
@@ -25,7 +24,8 @@ void GameState::setup()
     screen_->createSprite(lcd_->width(), lcd_->height());
 
     // init configuration
-    game_speed_ = 16;
+    render_cfg_.game_speed = 16;
+    render_cfg_.update_interval = render_cfg_.game_speed * 100;
     render_cfg_.screen_width = lcd_->width();
     render_cfg_.screen_height = lcd_->height();
     render_cfg_.last_ts = 0;
@@ -36,7 +36,7 @@ void GameState::setup()
 
 void GameState::loop()
 {
-    if (Utils::getTimestamp() - render_cfg_.last_ts > 100) {
+    if (Utils::getTimestamp() - render_cfg_.last_ts > 20) {
         clearCanvas();
         renderBackground();
         renderGround();
@@ -46,6 +46,7 @@ void GameState::loop()
         updateCanvas();
         render_cfg_.last_ts = Utils::getTimestamp();
     }
+    scanKeyboard();
 }
 
 void GameState::switchBackground()
@@ -143,8 +144,24 @@ void GameState::renderFPS()
         static_cast<int32_t>(screen_->height() * (render_cfg_.padding_ratio + 0.05)));
 }
 
-void GameState::renderDino() { dino_.update(screen_, render_cfg_); }
-void GameState::renderGround() { ground_.update(screen_, render_cfg_, game_speed_); }
-void GameState::renderClouds() { clouds_.update(screen_, render_cfg_, game_speed_); }
+void GameState::renderDino() { dino_.update(screen_, render_cfg_, action_); }
+void GameState::renderGround() { ground_.update(screen_, render_cfg_); }
+void GameState::renderClouds() { clouds_.update(screen_, render_cfg_); }
+
+void GameState::scanKeyboard()
+{
+    if (!lgfx::gpio_in(BTN_DOWN)) {
+        action_ = Action::BEND_OVER;
+    }
+    else if (!lgfx::gpio_in(BTN_RIGHT)) {
+        action_ = Action::RESTART;
+    }
+    else if (!lgfx::gpio_in(BTN_UP)) {
+        action_ = Action::JUMP;
+    }
+    else {
+        action_ = Action::NOTHING;
+    }
+}
 
 } // namespace dino
