@@ -39,7 +39,6 @@ using DinoConfig_t = struct DinoConfig
     const lgfx::color_depth_t depth{lgfx::v1::rgb332_1Byte};
     const double zoom_x{0.4};
     const double zoom_y{0.4};
-    Position_t pos;
 };
 
 class Dino
@@ -48,10 +47,9 @@ class Dino
 public:
     void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg)
     {
-        dino_cfg_.pos.x = render_cfg.screen_width * 0.2;
-        dino_cfg_.pos.y
-            = render_cfg.getBottomPaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2;
-        walk(screen, dino_cfg_.pos, render_cfg);
+        pos_.x = render_cfg.screen_width * 0.2;
+        pos_.y = render_cfg.getBottomPaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2;
+        walk(screen, pos_, render_cfg);
     }
 
 private:
@@ -67,6 +65,7 @@ private:
 private:
     uint8_t walk_count_{0};
     DinoConfig_t dino_cfg_;
+    Position_t pos_;
 };
 } // namespace dino
 

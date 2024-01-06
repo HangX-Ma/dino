@@ -25,6 +25,7 @@ void GameState::setup()
     screen_->createSprite(lcd_->width(), lcd_->height());
 
     // init configuration
+    game_speed_ = 16;
     render_cfg_.screen_width = lcd_->width();
     render_cfg_.screen_height = lcd_->height();
     render_cfg_.last_ts = 0;
@@ -38,6 +39,8 @@ void GameState::loop()
     if (Utils::getTimestamp() - render_cfg_.last_ts > 100) {
         clearCanvas();
         renderBackground();
+        renderGround();
+        renderClouds();
         renderFPS();
         renderDino();
         updateCanvas();
@@ -141,5 +144,7 @@ void GameState::renderFPS()
 }
 
 void GameState::renderDino() { dino_.update(screen_, render_cfg_); }
+void GameState::renderGround() { ground_.update(screen_, render_cfg_, game_speed_); }
+void GameState::renderClouds() { clouds_.update(screen_, render_cfg_, game_speed_); }
 
 } // namespace dino

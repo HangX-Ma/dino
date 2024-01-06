@@ -1,7 +1,9 @@
 #ifndef DINO_STATE_H
 #define DINO_STATE_H
 
+#include "dino/clouds.h"
 #include "dino/dino.h"
+#include "dino/ground.h"
 #include "dino/lv_anim.h"
 #include "dino/random.h"
 #include "dino/utils.h"
@@ -26,6 +28,8 @@ public:
 private:
     FPS fps_;
     Dino dino_;
+    Ground ground_;
+    Clouds clouds_;
 
 private:
     void switchBackground();
@@ -35,15 +39,20 @@ private:
     void generateTransitionZone(int32_t height, int32_t trans_y, double ratio);
     void renderFPS();
     void renderDino();
+    void renderGround();
+    void renderClouds();
 
     void clearCanvas() { screen_->clear(); }
     void updateCanvas() { screen_->pushSprite(0, 0); }
 
+private:
     LGFX *lcd_{nullptr};
     LGFX_Sprite *screen_{nullptr};
     Random random_generator_;
     RenderConfig_t render_cfg_;
 
+private:
+    uint16_t game_speed_;
     // background
     bool night_mode_{false};
     lvgl::LVAnim bg_anim_;
