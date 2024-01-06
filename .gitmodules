@@ -2,3 +2,7 @@
 	path = library/LovyanGFX
 	url = https://github.com/lovyan03/LovyanGFX.git
 	branch = master
+[submodule "library/spdlog"]
+	path = library/spdlog
+	url = https://github.com/gabime/spdlog.git
+	branch = v1.x
