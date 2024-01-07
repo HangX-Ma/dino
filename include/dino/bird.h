@@ -13,11 +13,11 @@ namespace dino
 
 struct BirdSize
 {
-    const int32_t width{88};
-    const int32_t height{80};
+    const int32_t width{35};
+    const int32_t height{32};
 };
 
-static const uint8_t *bird_state_map[6] = {image_data_bird1, image_data_bird2};
+static const uint8_t *bird_state_map[2] = {image_data_bird1, image_data_bird2};
 
 class Bird
 {
@@ -33,15 +33,23 @@ public:
         }
         pos_.x -= render_cfg.game_speed / 4;
         if (pos_.x < 0 - bird_size_.width) {
-            pos_.x = render_cfg.screen_width / render_cfg.zoom_x;
+            pos_.x = render_cfg.screen_width;
             is_finished_ = true;
         }
-        pos_.y = render_cfg.getBottomPaddingY() - render_cfg.getMiddlePaddingHeight() * 0.1;
+        pos_.y = render_cfg.getMiddlePaddingY() + render_cfg.getMiddlePaddingHeight() * 0.42;
 
-        screen->pushGrayscaleImageRotateZoom(
-            pos_.x, pos_.y, pos_.x, pos_.y, 0, render_cfg.zoom_x, render_cfg.zoom_y,
-            bird_size_.width, bird_size_.height, bird_state_map[bird_count_], render_cfg.depth,
-            render_cfg.prev_background_color, render_cfg.background_color);
+        screen->pushGrayscaleImage(pos_.x, pos_.y, bird_size_.width, bird_size_.height,
+                                   bird_state_map[bird_count_], render_cfg.depth,
+                                   render_cfg.prev_background_color, render_cfg.background_color);
+
+        // update bounding box
+        bounding_box_.upper_left.x = pos_.x;
+        bounding_box_.upper_left.y = pos_.y;
+        bounding_box_.lower_right.x = bounding_box_.upper_left.x + bird_size_.width;
+        bounding_box_.lower_right.y = bounding_box_.upper_left.y + bird_size_.height;
+        // TODO(HangX-Ma): debug usage, draw box
+        screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y, bird_size_.width,
+                         bird_size_.height, lgfx::colors::TFT_RED);
 
         if (is_finished_) {
             is_finished_ = false;
@@ -50,12 +58,14 @@ public:
         return false;
     }
 
+    BoundingBox_t getBoundingBox() { return bounding_box_; }
+
 private:
+    BoundingBox_t bounding_box_;
     BirdSize bird_size_;
     Position_t pos_{-0xFFFF, 0};
     uint32_t bird_count_{0};
     uint32_t bird_tick_;
-
     bool is_finished_{false};
 };
 } // namespace dino

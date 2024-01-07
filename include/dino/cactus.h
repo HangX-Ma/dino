@@ -20,8 +20,6 @@ struct CactusSize
 
 using CactusConfig_t = struct CactusConfig
 {
-    const double zoom_x{0.32};
-    const double zoom_y{0.32};
     CactusSize cactus_size[3];
 };
 
@@ -41,16 +39,16 @@ public:
     Cactus()
     {
         auto &large = cactus_cfg_.cactus_size[Utils::toIndex(CactusType::LARGE)];
-        large.width = 147;
-        large.height = 93;
+        large.width = 51;
+        large.height = 32;
 
         auto &middle = cactus_cfg_.cactus_size[Utils::toIndex(CactusType::MIDDLE)];
-        middle.width = 58;
-        middle.height = 93;
+        middle.width = 20;
+        middle.height = 32;
 
         auto &small = cactus_cfg_.cactus_size[Utils::toIndex(CactusType::SMALL)];
-        small.width = 48;
-        small.height = 96;
+        small.width = 16;
+        small.height = 32;
     }
 
     bool update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, CactusType type)
@@ -62,18 +60,30 @@ public:
             cactus_tick_ = render_cfg.last_ts;
             pos_.x -= render_cfg.game_speed;
             if (pos_.x < 0 - cactus_cfg_.cactus_size[Utils::toIndex(type)].width) {
-                pos_.x = render_cfg.screen_width / cactus_cfg_.zoom_x;
+                pos_.x = render_cfg.screen_width;
                 is_finished_ = true;
             }
         }
-        pos_.y = render_cfg.getBottomPaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2;
+        pos_.y = render_cfg.getBottomPaddingY() - render_cfg.getMiddlePaddingHeight() * 0.3;
 
-        screen->pushGrayscaleImageRotateZoom(
-            pos_.x, pos_.y, pos_.x, pos_.y, 0, cactus_cfg_.zoom_x, cactus_cfg_.zoom_y,
-            cactus_cfg_.cactus_size[Utils::toIndex(type)].width,
-            cactus_cfg_.cactus_size[Utils::toIndex(type)].height,
-            cactus_type_map[Utils::toIndex(type)], render_cfg.depth,
-            render_cfg.prev_background_color, render_cfg.background_color);
+        screen->pushGrayscaleImage(pos_.x, pos_.y,
+                                   cactus_cfg_.cactus_size[Utils::toIndex(type)].width,
+                                   cactus_cfg_.cactus_size[Utils::toIndex(type)].height,
+                                   cactus_type_map[Utils::toIndex(type)], render_cfg.depth,
+                                   render_cfg.prev_background_color, render_cfg.background_color);
+
+        // update bounding box
+        bounding_box_.upper_left.x = pos_.x;
+        bounding_box_.upper_left.y = pos_.y;
+        bounding_box_.lower_right.x
+            = bounding_box_.upper_left.x + cactus_cfg_.cactus_size[Utils::toIndex(type)].width;
+        bounding_box_.lower_right.y
+            = bounding_box_.upper_left.y + cactus_cfg_.cactus_size[Utils::toIndex(type)].height;
+        // TODO(HangX-Ma): debug usage, draw box
+        screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y,
+                         cactus_cfg_.cactus_size[Utils::toIndex(type)].width,
+                         cactus_cfg_.cactus_size[Utils::toIndex(type)].height,
+                         lgfx::colors::TFT_RED);
 
         if (is_finished_) {
             is_finished_ = false;
@@ -82,7 +92,10 @@ public:
         return false;
     }
 
+    BoundingBox_t getBoundingBox() { return bounding_box_; }
+
 private:
+    BoundingBox_t bounding_box_;
     CactusConfig_t cactus_cfg_;
     Position_t pos_{-0xFFFF, 0};
     uint32_t cactus_tick_{0};
