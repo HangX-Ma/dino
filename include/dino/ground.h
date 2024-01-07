@@ -17,19 +17,23 @@ struct GroundSize
 class Ground
 {
 public:
-    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg)
+    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, bool dino_alive)
     {
-        if (render_cfg.last_ts - ground_tick_
-            > std::max(static_cast<uint16_t>(render_cfg.update_interval - render_cfg.game_speed),
-                       render_cfg.minimum_interval))
-        {
-            pos_.x -= render_cfg.game_speed;
-            if (pos_.x < -(ground_size_.width * render_cfg.zoom_x - render_cfg.screen_width)) {
-                pos_.x = 0;
+        if (dino_alive) {
+            if (render_cfg.last_ts - ground_tick_ > std::max(
+                    static_cast<uint16_t>(render_cfg.update_interval - render_cfg.game_speed),
+                    render_cfg.minimum_interval))
+            {
+                pos_.x -= render_cfg.game_speed;
+                if (pos_.x < -(ground_size_.width * render_cfg.zoom_x - render_cfg.screen_width)) {
+                    pos_.x = 0;
+                }
+                ground_tick_ = render_cfg.last_ts;
             }
-            ground_tick_ = render_cfg.last_ts;
+            pos_.y
+                = render_cfg.getBottomPaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2 + 64;
         }
-        pos_.y = render_cfg.getBottomPaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2 + 64;
+
         screen->pushGrayscaleImageRotateZoom(
             pos_.x, pos_.y, pos_.x, pos_.y, 0, render_cfg.zoom_x, render_cfg.zoom_y,
             ground_size_.width, ground_size_.height, image_data_ground, render_cfg.depth,

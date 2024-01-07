@@ -59,17 +59,16 @@ class Dino
 {
 
 public:
-    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, Action action,
-                bool dino_alive = true)
+    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, Action action)
     {
-        getGroundPos(pos_, render_cfg);
-        if (!dino_alive) {
+        if (!dino_alive_) {
             screen->pushGrayscaleImage(pos_.x, pos_.y, dino_size_.width, dino_size_.height,
                                        dino_state_map[Utils::toIndex(DinoState::DEAD)],
                                        render_cfg.depth, render_cfg.prev_background_color,
                                        render_cfg.background_color);
             return;
         }
+        getGroundPos(pos_, render_cfg);
 
         switch (status_) {
         // If Dino is on the ground, it can jump or bend over
@@ -110,8 +109,18 @@ public:
             break;
         }
         }
-        // update bounding box
+        updateBoundingBox(screen);
+        spdlog::debug("DinoAction: {}, DinoState: {}", DINO_ACTION_STR[Utils::toIndex(action)],
+                      DINO_STATUS_STR[Utils::toIndex(status_)]);
+    }
 
+    BoundingBox_t getBoundingBox() { return bounding_box_; }
+    void setDinoAliveStatus(bool is_alive) { dino_alive_ = is_alive; }
+    bool getDinoAliveStatus() { return dino_alive_; }
+
+private:
+    void updateBoundingBox(lgfx::LGFX_Sprite *screen)
+    {
         int32_t bound_height = status_ == DinoStatus::BEND_OVER
                                    ? dino_size_.height - dino_size_.bonding_offset
                                    : dino_size_.height;
@@ -120,14 +129,12 @@ public:
             = status_ == DinoStatus::BEND_OVER ? pos_.y + dino_size_.bonding_offset : pos_.y;
         bounding_box_.lower_right.x = bounding_box_.upper_left.x + dino_size_.width;
         bounding_box_.lower_right.y = bounding_box_.upper_left.y + bound_height;
+
         // TODO(HangX-Ma): debug usage, draw box
         screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y, dino_size_.width,
                          bound_height, lgfx::colors::TFT_RED);
-        spdlog::debug("DinoAction: {}, DinoState: {}", DINO_ACTION_STR[Utils::toIndex(action)],
-                      DINO_STATUS_STR[Utils::toIndex(status_)]);
     }
 
-private:
     /** @retval true, on ground; false, in the air */
     bool stiff(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, Position_t &pos)
     {
@@ -201,8 +208,6 @@ private:
         pos_.y = render_cfg.getBottomPaddingY() - render_cfg.getMiddlePaddingHeight() * 0.39;
     }
 
-    BoundingBox_t getBoundingBox() { return bounding_box_; }
-
 private:
     uint8_t walk_count_{0};
     uint8_t bend_count_{0};
@@ -217,6 +222,8 @@ private:
 
     lvgl::LVAnim dino_anim_;
     uint32_t dino_anim_duration_{200};
+
+    bool dino_alive_{true};
 };
 } // namespace dino
 

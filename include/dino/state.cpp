@@ -30,7 +30,7 @@ void GameState::setup()
     render_cfg_.game_speed = 25;
     render_cfg_.max_game_speed = render_cfg_.update_interval - render_cfg_.minimum_interval;
 
-    render_cfg_.bird_come_score = 1000;
+    render_cfg_.bird_come_score = 0;
     render_cfg_.score_diff = 100;
 
     render_cfg_.screen_width = lcd_->width();
@@ -158,11 +158,22 @@ void GameState::renderFPS()
         static_cast<int32_t>(screen_->height() * (render_cfg_.padding_ratio + 0.05)));
 }
 
-void GameState::renderDino() { dino_.update(screen_, render_cfg_, action_); }
-void GameState::renderGround() { ground_.update(screen_, render_cfg_); }
+void GameState::renderDino()
+{
+    dino_.update(screen_, render_cfg_, action_);
+    bool collide = Utils::intersects(dino_.getBoundingBox(), obstacle_.getBoundingBox());
+    if (collide) {
+        dino_.setDinoAliveStatus(false);
+        spdlog::info("Collision!");
+    }
+}
+void GameState::renderGround() { ground_.update(screen_, render_cfg_, dino_.getDinoAliveStatus()); }
 void GameState::renderClouds() { clouds_.update(screen_, render_cfg_); }
-void GameState::renderScore() { score_.update(screen_, render_cfg_); }
-void GameState::renderObstacle() { obstacle_.update(screen_, render_cfg_, score_.getScore()); }
+void GameState::renderScore() { score_.update(screen_, render_cfg_, dino_.getDinoAliveStatus()); }
+void GameState::renderObstacle()
+{
+    obstacle_.update(screen_, render_cfg_, score_.getScore(), dino_.getDinoAliveStatus());
+}
 
 void GameState::scanKeyboard()
 {

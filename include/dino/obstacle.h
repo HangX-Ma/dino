@@ -18,18 +18,19 @@ enum class ObstacleType
 class Obstacle
 {
 public:
-    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, uint32_t score)
+    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, uint32_t score,
+                bool dino_alive)
     {
         if (score < render_cfg.bird_come_score) {
-            updateCactus(screen, render_cfg);
+            updateCactus(screen, render_cfg, dino_alive);
         }
         else {
             switch (obstacle_type_) {
             case ObstacleType::BIRD:
-                is_finished_ = updateBird(screen, render_cfg);
+                is_finished_ = updateBird(screen, render_cfg, dino_alive);
                 break;
             case ObstacleType::CACTUS:
-                is_finished_ = updateCactus(screen, render_cfg);
+                is_finished_ = updateCactus(screen, render_cfg, dino_alive);
                 break;
             }
 
@@ -45,15 +46,25 @@ public:
         }
     }
 
+    BoundingBox_t getBoundingBox()
+    {
+        switch (obstacle_type_) {
+        case ObstacleType::BIRD:
+            return bird_.getBoundingBox();
+        case ObstacleType::CACTUS:
+            return cactus_.getBoundingBox();
+        }
+    }
+
 private:
-    bool updateBird(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg);
-    bool updateCactus(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg);
+    bool updateBird(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, bool dino_alive);
+    bool updateCactus(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, bool dino_alive);
 
 private:
     Bird bird_;
     Cactus cactus_{};
     CactusType cactus_type_{CactusType::SMALL};
-    ObstacleType obstacle_type_{ObstacleType::BIRD};
+    ObstacleType obstacle_type_{ObstacleType::CACTUS};
     bool is_finished_{false};
 
     Random random_generator_;

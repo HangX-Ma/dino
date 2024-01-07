@@ -10,7 +10,7 @@ namespace dino
 class Score
 {
 public:
-    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg)
+    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, bool dino_alive)
     {
         screen->setFont(&lgfx::fonts::Font8x8C64);
         screen->setTextDatum(lgfx::middle_left);
@@ -18,16 +18,21 @@ public:
         screen->setTextSize(1);
         screen->setTextColor(render_cfg.prev_background_color);
 
-        if (render_cfg.last_ts - score_tick_ > render_cfg.update_interval / render_cfg.game_speed) {
-            score_ += 1;
-            // speed up game!
-            if (score_ - score_marker_ > render_cfg.score_diff) {
-                score_marker_ = score_;
-                render_cfg.game_speed = std::min(static_cast<uint16_t>(render_cfg.game_speed + 1),
-                                                 render_cfg.max_game_speed);
-                spdlog::info("Game Speed: {}", render_cfg.game_speed);
+        if (dino_alive) {
+            if (render_cfg.last_ts - score_tick_
+                > render_cfg.update_interval / render_cfg.game_speed)
+            {
+                score_ += 1;
+                // speed up game!
+                if (score_ - score_marker_ > render_cfg.score_diff) {
+                    score_marker_ = score_;
+                    render_cfg.game_speed
+                        = std::min(static_cast<uint16_t>(render_cfg.game_speed + 1),
+                                   render_cfg.max_game_speed);
+                    spdlog::info("Game Speed: {}", render_cfg.game_speed);
+                }
+                score_tick_ = render_cfg.last_ts;
             }
-            score_tick_ = render_cfg.last_ts;
         }
 
         score_text_ = std::to_string(score_);

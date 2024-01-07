@@ -3,14 +3,14 @@
 namespace dino
 {
 
-bool Obstacle::updateBird(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg)
+bool Obstacle::updateBird(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, bool dino_alive)
 {
-    return bird_.update(screen, render_cfg);
+    return bird_.update(screen, render_cfg, dino_alive);
 }
 
-bool Obstacle::updateCactus(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg)
+bool Obstacle::updateCactus(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, bool dino_alive)
 {
-    if (cactus_.update(screen, render_cfg, cactus_type_)) {
+    if (cactus_.update(screen, render_cfg, cactus_type_, dino_alive)) {
         // Low game speed only use 2 cactus type: MIDDLE and SMALL
         if (render_cfg.game_speed < 42) {
             cactus_type_ = static_cast<CactusType>(random_generator_.next(1, 2));

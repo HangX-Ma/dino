@@ -74,7 +74,7 @@ public:
         return static_cast<std::common_type_t<int, std::underlying_type_t<Type>>>(val);
     }
 
-    bool intersects(BoundingBox_t box1, BoundingBox_t box2)
+    static bool intersects(BoundingBox_t box1, BoundingBox_t box2)
     {
         int32_t inter_left = std::max(box1.upper_left.x, box2.upper_left.x);
         int32_t inter_top = std::max(box1.upper_left.y, box2.upper_left.y);
