@@ -32,6 +32,9 @@ void GameState::setup()
 
     render_cfg_.bird_come_score = 2000;
     render_cfg_.score_diff = 500;
+    // render_cfg_.score_new_skill = 5000;
+    // TODO(HangX-Ma): change back
+    render_cfg_.score_new_skill = 0;
 
     render_cfg_.screen_width = lcd_->width();
     render_cfg_.screen_height = lcd_->height();
@@ -177,12 +180,83 @@ void GameState::renderObstacle()
     obstacle_.update(screen_, render_cfg_, score_.getScore(), dino_.getDinoAliveStatus());
 }
 
+void GameState::renderDialog()
+{
+    // Render dialog window
+    for (int w = 0; w < screen_->width() * 0.8; w += 1) {
+        screen_->fillRoundRect((screen_->width() * 0.1 + 3) + screen_->width() * 0.4 - (w / 2.0),
+                               screen_->height() * 0.25 + 3, w, screen_->height() * 0.5, 8,
+                               lgfx::colors::TFT_LIGHTGRAY);
+        screen_->fillRoundRect((screen_->width() * 0.1) + screen_->width() * 0.4 - (w / 2.0),
+                               screen_->height() * 0.25, w, screen_->height() * 0.5, 8,
+                               lgfx::colors::TFT_DARKGRAY);
+        SDL_Delay(2);
+        updateCanvas();
+    }
+    SDL_Delay(50);
+
+    screen_->setFont(&fonts::Font8x8C64);
+    screen_->setTextDatum(middle_left);
+    screen_->setTextColor(TFT_WHITE, lgfx::colors::TFT_WHITE);
+
+    screen_->setTextSize(1.2);
+    screen_->drawCenterString("Congratulations!", screen_->width() / 2 - 3,
+                              render_cfg_.getMiddlePaddingY()
+                                  + render_cfg_.getMiddlePaddingHeight() * 0.2);
+
+    screen_->setTextSize(1);
+    screen_->drawString("Your Dino gets a new", screen_->width() / 6,
+                        render_cfg_.getMiddlePaddingY()
+                            + render_cfg_.getMiddlePaddingHeight() * 0.35);
+    screen_->drawString("skill. You can press", screen_->width() / 6,
+                        render_cfg_.getMiddlePaddingY()
+                            + render_cfg_.getMiddlePaddingHeight() * 0.45);
+    screen_->drawString("down arrow in air to", screen_->width() / 6,
+                        render_cfg_.getMiddlePaddingY()
+                            + render_cfg_.getMiddlePaddingHeight() * 0.55);
+    screen_->drawString("make Dino back to the", screen_->width() / 6,
+                        render_cfg_.getMiddlePaddingY()
+                            + render_cfg_.getMiddlePaddingHeight() * 0.65);
+    screen_->drawString("ground right away!", screen_->width() / 6,
+                        render_cfg_.getMiddlePaddingY()
+                            + render_cfg_.getMiddlePaddingHeight() * 0.75);
+    updateCanvas();
+
+    // wait user to confirm
+    while (true) {
+        scanKeyboard();
+        if (action_ == Action::RESTART) {
+            action_ = Action::NOTHING;
+            dino_.setDinoAliveStatus(true);
+            break;
+        }
+    }
+
+    // Close dialog window
+    for (int w = screen_->width() * 0.8; w > 0; w -= 1) {
+        screen_->clear();
+        renderBackground();
+        screen_->fillRoundRect((screen_->width() * 0.1 + 3) + screen_->width() * 0.4 - (w / 2.0),
+                               screen_->height() * 0.25 + 3, w, screen_->height() * 0.5, 8,
+                               lgfx::colors::TFT_LIGHTGRAY);
+        screen_->fillRoundRect((screen_->width() * 0.1) + screen_->width() * 0.4 - (w / 2.0),
+                               screen_->height() * 0.25, w, screen_->height() * 0.5, 8,
+                               lgfx::colors::TFT_DARKGRAY);
+        SDL_Delay(2);
+        updateCanvas();
+    }
+}
+
 void GameState::renderBtn()
 {
     if (!dino_.getDinoAliveStatus()) {
         btn_.update(screen_, render_cfg_);
         // check restart command
         if (action_ == Action::RESTART) {
+            if (!dino_.getDinoNewSkillFlag() && score_.getScore() >= render_cfg_.score_new_skill) {
+                renderDialog();
+                dino_.setDinoNewSkill(true);
+            }
             reset();
         }
     }

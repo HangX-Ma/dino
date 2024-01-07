@@ -93,6 +93,12 @@ public:
             if (stiff(screen, render_cfg, pos_)) {
                 status_ = DinoStatus::ON_GROUND;
             }
+            if (dino_new_skill_) {
+                if (action == Action::BEND_OVER) {
+                    status_ = DinoStatus::BEND_OVER;
+                }
+            }
+
             break;
         }
         // Dino bend over
@@ -117,6 +123,8 @@ public:
     BoundingBox_t getBoundingBox() { return bounding_box_; }
     void setDinoAliveStatus(bool is_alive) { dino_alive_ = is_alive; }
     bool getDinoAliveStatus() { return dino_alive_; }
+    void setDinoNewSkill(bool val) { dino_new_skill_ = val; }
+    bool getDinoNewSkillFlag() { return dino_new_skill_; }
 
     void reset()
     {
@@ -234,6 +242,7 @@ private:
     uint32_t dino_anim_duration_{200};
 
     bool dino_alive_{true};
+    bool dino_new_skill_{false};
 };
 } // namespace dino
 

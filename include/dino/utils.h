@@ -30,6 +30,7 @@ using RenderConfig_t = struct RenderConfig
     uint16_t minimum_interval;
 
     uint32_t score_diff;
+    uint32_t score_new_skill;
     uint32_t bird_come_score;
 
     int background_color;
