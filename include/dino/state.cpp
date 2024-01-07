@@ -35,6 +35,7 @@ void GameState::setup()
     // render_cfg_.score_new_skill = 5000;
     // TODO(HangX-Ma): change back
     render_cfg_.score_new_skill = 0;
+    render_cfg_.obstacle_max_delay = 2000; // 2s
 
     render_cfg_.screen_width = lcd_->width();
     render_cfg_.screen_height = lcd_->height();
