@@ -26,17 +26,19 @@ public:
     void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg)
     {
         // generate new cloud
-        if (Utils::getTimestamp() - clouds_tick_ > 8000) {
+        if (Utils::getTimestamp() - clouds_tick_ > 6000) {
             int32_t y = random_generator_.next(
-                render_cfg.getMiddlePaddingY() + render_cfg.getMiddlePaddingHeight() * 0.4,
-                render_cfg.getMiddlePaddingY() + render_cfg.getMiddlePaddingHeight() * 0.7);
+                render_cfg.getMiddlePaddingY()
+                    + render_cfg.getMiddlePaddingHeight() * 0.18 / clouds_cfg_.zoom_y,
+                render_cfg.getMiddlePaddingY()
+                    + render_cfg.getMiddlePaddingHeight() * 0.35 / clouds_cfg_.zoom_y);
             clouds_pos_.emplace_back(
                 Position_t{static_cast<int32_t>(render_cfg.screen_width / clouds_cfg_.zoom_x), y});
             clouds_tick_ = Utils::getTimestamp();
         }
 
         for (size_t i = 0; i < clouds_pos_.size(); i += 1) {
-            clouds_pos_[i].x -= render_cfg.game_speed / 8.0;
+            clouds_pos_[i].x -= 1;
             // remove invalid one
             if (clouds_pos_[i].x < 0 - clouds_cfg_.width) {
                 auto cloud_iter = clouds_pos_.begin() + i;

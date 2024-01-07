@@ -132,8 +132,7 @@ private:
         if (!is_falling_ && dino_anim_.isFinished(render_cfg.last_ts)) {
             dino_anim_.setPathCallback(lvgl::LVAnimPathType::EASE_IN);
             dino_anim_.setDuration(dino_anim_duration_);
-            dino_anim_.setValues(pos_.y, render_cfg.getBottomPaddingY()
-                                             + render_cfg.getMiddlePaddingHeight() * 0.2);
+            dino_anim_.setValues(pos_.y, render_cfg.getGroundY());
             dino_anim_.setCurrentValue(render_cfg.last_ts);
             is_falling_ = true;
             return false;
@@ -151,9 +150,7 @@ private:
     {
         dino_anim_.setPathCallback(lvgl::LVAnimPathType::EASE_OUT);
         dino_anim_.setDuration(dino_anim_duration_);
-        dino_anim_.setValues(
-            render_cfg.getBottomPaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2,
-            render_cfg.getBottomPaddingY() - render_cfg.getMiddlePaddingHeight() * 0.5);
+        dino_anim_.setValues(render_cfg.getGroundY(), render_cfg.getJumpApexY());
         dino_anim_.setCurrentValue(render_cfg.last_ts);
     }
 
@@ -184,7 +181,7 @@ private:
     void getGroundPos(Position_t &pos, RenderConfig_t &render_cfg)
     {
         pos_.x = render_cfg.screen_width * 0.2;
-        pos_.y = render_cfg.getBottomPaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2;
+        pos_.y = render_cfg.getGroundY();
     }
 
 private:

@@ -48,6 +48,9 @@ using RenderConfig_t = struct RenderConfig
     int32_t getMiddlePaddingY() { return screen_height * padding_ratio; }
     int32_t getMiddlePaddingHeight() { return screen_height * (1.0 - 2.0 * padding_ratio); }
     int32_t getBottomPaddingY() { return screen_height * (1.0 - padding_ratio); }
+
+    int32_t getGroundY() { return getBottomPaddingY() + getMiddlePaddingHeight() * 0.2; }
+    int32_t getJumpApexY() { return getBottomPaddingY() - getMiddlePaddingHeight() * 0.5; }
 };
 
 using Position_t = struct Position
