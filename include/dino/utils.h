@@ -38,8 +38,12 @@ using RenderConfig_t = struct RenderConfig
     int32_t last_ts;      // timestamp
 
     uint16_t game_speed;
+    uint16_t max_game_speed;
     uint16_t update_interval;
-    uint16_t score_diff;
+    uint16_t minimum_interval;
+
+    uint32_t score_diff;
+    uint32_t bird_come_score;
 
     int background_color;
     int prev_background_color;
@@ -49,6 +53,11 @@ using RenderConfig_t = struct RenderConfig
     int32_t getMiddlePaddingHeight() { return screen_height * (1.0 - 2.0 * padding_ratio); }
     int32_t getBottomPaddingY() { return screen_height * (1.0 - padding_ratio); }
 
+    lgfx::color_depth_t depth;
+    double zoom_x;
+    double zoom_y;
+    // Y is related with zoom_y, if you change zoom_y, you need to change `getGroundY` and
+    // `getJumpApexY`
     int32_t getGroundY() { return getBottomPaddingY() + getMiddlePaddingHeight() * 0.2; }
     int32_t getJumpApexY() { return getBottomPaddingY() - getMiddlePaddingHeight() * 0.5; }
 };

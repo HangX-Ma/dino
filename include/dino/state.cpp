@@ -1,3 +1,4 @@
+#include "dino/cactus.h"
 #include "dino/lv_anim.h"
 #include "dino/utils.h"
 #include "dino/state.h"
@@ -24,15 +25,25 @@ void GameState::setup()
     screen_->createSprite(lcd_->width(), lcd_->height());
 
     // init configuration
-    render_cfg_.game_speed = 16;
-    render_cfg_.update_interval = render_cfg_.game_speed * 100;
+    render_cfg_.update_interval = 100;
+    render_cfg_.minimum_interval = 50;
+    render_cfg_.game_speed = 25;
+    render_cfg_.max_game_speed = render_cfg_.update_interval - render_cfg_.minimum_interval;
+
+    render_cfg_.bird_come_score = 1000;
     render_cfg_.score_diff = 100;
+
     render_cfg_.screen_width = lcd_->width();
     render_cfg_.screen_height = lcd_->height();
     render_cfg_.last_ts = 0;
+
     render_cfg_.padding_ratio = 0.2;
     render_cfg_.background_color = lgfx::colors::TFT_WHITE;
     render_cfg_.prev_background_color = lgfx::colors::TFT_BLACK;
+
+    render_cfg_.depth = lgfx::v1::rgb332_1Byte;
+    render_cfg_.zoom_x = 0.4;
+    render_cfg_.zoom_y = 0.4;
 }
 
 void GameState::loop()
@@ -45,6 +56,7 @@ void GameState::loop()
         renderFPS();
         renderScore();
         renderDino();
+        renderObstacle();
         updateCanvas();
         render_cfg_.last_ts = Utils::getTimestamp();
     }
@@ -150,6 +162,7 @@ void GameState::renderDino() { dino_.update(screen_, render_cfg_, action_); }
 void GameState::renderGround() { ground_.update(screen_, render_cfg_); }
 void GameState::renderClouds() { clouds_.update(screen_, render_cfg_); }
 void GameState::renderScore() { score_.update(screen_, render_cfg_); }
+void GameState::renderObstacle() { obstacle_.update(screen_, render_cfg_, score_.getScore()); }
 
 void GameState::scanKeyboard()
 {

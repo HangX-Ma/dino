@@ -48,13 +48,10 @@ static const uint8_t *dino_state_map[6]
     = {image_data_motion1, image_data_motion2, image_data_motion3,
        image_data_motion4, image_data_motion5, image_data_motion6};
 
-using DinoConfig_t = struct DinoConfig
+struct DinoSize
 {
     const int32_t width{88};
     const int32_t height{95};
-    const lgfx::color_depth_t depth{lgfx::v1::rgb332_1Byte};
-    const double zoom_x{0.4};
-    const double zoom_y{0.4};
 };
 
 class Dino
@@ -68,9 +65,10 @@ public:
 
         if (!dino_alive) {
             screen->pushGrayscaleImageRotateZoom(
-                pos_.x, pos_.y, pos_.x, pos_.y, 0, dino_cfg_.zoom_x, dino_cfg_.zoom_y,
-                dino_cfg_.width, dino_cfg_.height, dino_state_map[Utils::toIndex(DinoState::DEAD)],
-                dino_cfg_.depth, render_cfg.prev_background_color, render_cfg.background_color);
+                pos_.x, pos_.y, pos_.x, pos_.y, 0, render_cfg.zoom_x, render_cfg.zoom_y,
+                dino_size_.width, dino_size_.height,
+                dino_state_map[Utils::toIndex(DinoState::DEAD)], render_cfg.depth,
+                render_cfg.prev_background_color, render_cfg.background_color);
             return;
         }
 
@@ -113,8 +111,8 @@ public:
             break;
         }
         }
-        spdlog::info("DinoAction: {}, DinoState: {}", DINO_ACTION_STR[Utils::toIndex(action)],
-                     DINO_STATUS_STR[Utils::toIndex(status_)]);
+        spdlog::debug("DinoAction: {}, DinoState: {}", DINO_ACTION_STR[Utils::toIndex(action)],
+                      DINO_STATUS_STR[Utils::toIndex(status_)]);
     }
 
 private:
@@ -124,9 +122,9 @@ private:
         // update dino 'y'
         pos_.y = dino_anim_.getValue(render_cfg.last_ts);
         screen->pushGrayscaleImageRotateZoom(
-            pos.x, pos.y, pos.x, pos.y, 0, dino_cfg_.zoom_x, dino_cfg_.zoom_y, dino_cfg_.width,
-            dino_cfg_.height, dino_state_map[Utils::toIndex(DinoState::STAND_STIFF)],
-            dino_cfg_.depth, render_cfg.prev_background_color, render_cfg.background_color);
+            pos.x, pos.y, pos.x, pos.y, 0, render_cfg.zoom_x, render_cfg.zoom_y, dino_size_.width,
+            dino_size_.height, dino_state_map[Utils::toIndex(DinoState::STAND_LEFT)],
+            render_cfg.depth, render_cfg.prev_background_color, render_cfg.background_color);
 
         // start fall down animation after reaching the top
         if (!is_falling_ && dino_anim_.isFinished(render_cfg.last_ts)) {
@@ -156,25 +154,31 @@ private:
 
     void bendOver(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, Position_t pos)
     {
-        if (render_cfg.last_ts - dino_tick_ > render_cfg.update_interval / render_cfg.game_speed) {
+        if (render_cfg.last_ts - dino_tick_
+            > std::max(static_cast<uint16_t>(render_cfg.update_interval - render_cfg.game_speed),
+                       render_cfg.minimum_interval))
+        {
             bend_count_ = (bend_count_ + 1) % BEND_STATE_NUM;
             dino_tick_ = render_cfg.last_ts;
         }
         screen->pushGrayscaleImageRotateZoom(
-            pos.x, pos.y, pos.x, pos.y, 0, dino_cfg_.zoom_x, dino_cfg_.zoom_y, dino_cfg_.width,
-            dino_cfg_.height, dino_state_map[bend_count_ + 4], dino_cfg_.depth,
+            pos.x, pos.y, pos.x, pos.y, 0, render_cfg.zoom_x, render_cfg.zoom_y, dino_size_.width,
+            dino_size_.height, dino_state_map[bend_count_ + 4], render_cfg.depth,
             render_cfg.prev_background_color, render_cfg.background_color);
     }
 
     void walk(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, Position_t pos)
     {
-        if (render_cfg.last_ts - dino_tick_ > render_cfg.update_interval / render_cfg.game_speed) {
+        if (render_cfg.last_ts - dino_tick_
+            > std::max(static_cast<uint16_t>(render_cfg.update_interval - render_cfg.game_speed),
+                       render_cfg.minimum_interval))
+        {
             walk_count_ = (walk_count_ + 1) % STAND_STATE_NUM;
             dino_tick_ = render_cfg.last_ts;
         }
         screen->pushGrayscaleImageRotateZoom(
-            pos.x, pos.y, pos.x, pos.y, 0, dino_cfg_.zoom_x, dino_cfg_.zoom_y, dino_cfg_.width,
-            dino_cfg_.height, dino_state_map[walk_count_], dino_cfg_.depth,
+            pos.x, pos.y, pos.x, pos.y, 0, render_cfg.zoom_x, render_cfg.zoom_y, dino_size_.width,
+            dino_size_.height, dino_state_map[walk_count_], render_cfg.depth,
             render_cfg.prev_background_color, render_cfg.background_color);
     }
 
@@ -189,7 +193,7 @@ private:
     uint8_t bend_count_{0};
 
     DinoStatus status_{DinoStatus::ON_GROUND};
-    DinoConfig_t dino_cfg_;
+    DinoSize dino_size_;
     Position_t pos_;
 
     bool is_falling_{false};

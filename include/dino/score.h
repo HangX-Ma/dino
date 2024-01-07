@@ -3,6 +3,7 @@
 
 #include "dino/utils.h"
 #include "lgfx/v1/LGFX_Sprite.hpp"
+#include "spdlog/spdlog.h"
 namespace dino
 {
 
@@ -22,7 +23,9 @@ public:
             // speed up game!
             if (score_ - score_marker_ > render_cfg.score_diff) {
                 score_marker_ = score_;
-                render_cfg.game_speed += 1;
+                render_cfg.game_speed = std::min(static_cast<uint16_t>(render_cfg.game_speed + 1),
+                                                 render_cfg.max_game_speed);
+                spdlog::info("Game Speed: {}", render_cfg.game_speed);
             }
             score_tick_ = render_cfg.last_ts;
         }
@@ -39,10 +42,12 @@ public:
         screen->drawString("HI ", render_cfg.screen_width - hi_x, y);
     }
 
+    uint32_t getScore() { return score_; }
+
 private:
-    uint16_t score_{0};
-    uint16_t score_marker_{0};
-    uint16_t highest_score_{0};
+    uint32_t score_{0};
+    uint32_t score_marker_{0};
+    uint32_t highest_score_{0};
 
     std::string score_text_;
     std::string highest_score_text_;

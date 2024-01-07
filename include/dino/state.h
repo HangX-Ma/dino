@@ -1,10 +1,13 @@
 #ifndef DINO_STATE_H
 #define DINO_STATE_H
 
+#include "dino/bird.h"
+#include "dino/cactus.h"
 #include "dino/clouds.h"
 #include "dino/dino.h"
 #include "dino/ground.h"
 #include "dino/lv_anim.h"
+#include "dino/obstacle.h"
 #include "dino/random.h"
 #include "dino/score.h"
 #include "dino/utils.h"
@@ -32,6 +35,7 @@ private:
     Ground ground_;
     Clouds clouds_;
     Score score_;
+    Obstacle obstacle_;
 
 private:
     void switchBackground();
@@ -44,6 +48,7 @@ private:
     void renderGround();
     void renderClouds();
     void renderScore();
+    void renderObstacle();
 
     void clearCanvas() { screen_->clear(); }
     void updateCanvas() { screen_->pushSprite(0, 0); }
