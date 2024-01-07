@@ -72,9 +72,9 @@ private:
             = bounding_box_.upper_left.x + bird_size_.width - bird_size_.bonding_offset;
         bounding_box_.lower_right.y = bounding_box_.upper_left.y + bird_size_.height;
         // TODO(HangX-Ma): debug usage, draw box
-        screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y,
-                         bird_size_.width - bird_size_.bonding_offset, bird_size_.height,
-                         lgfx::colors::TFT_RED);
+        // screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y,
+        //                  bird_size_.width - bird_size_.bonding_offset, bird_size_.height,
+        //                  lgfx::colors::TFT_RED);
     }
 
 private:

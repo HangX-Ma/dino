@@ -149,8 +149,9 @@ private:
         bounding_box_.lower_right.y = bounding_box_.upper_left.y + bound_height;
 
         // TODO(HangX-Ma): debug usage, draw box
-        screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y, dino_size_.width,
-                         bound_height, lgfx::colors::TFT_RED);
+        // screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y,
+        // dino_size_.width,
+        //                  bound_height, lgfx::colors::TFT_RED);
     }
 
     /** @retval true, on ground; false, in the air */

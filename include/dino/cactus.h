@@ -102,10 +102,10 @@ private:
         bounding_box_.lower_right.y
             = bounding_box_.upper_left.y + cactus_cfg_.cactus_size[Utils::toIndex(type)].height;
         // TODO(HangX-Ma): debug usage, draw box
-        screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y,
-                         cactus_cfg_.cactus_size[Utils::toIndex(type)].width,
-                         cactus_cfg_.cactus_size[Utils::toIndex(type)].height,
-                         lgfx::colors::TFT_RED);
+        // screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y,
+        //                  cactus_cfg_.cactus_size[Utils::toIndex(type)].width,
+        //                  cactus_cfg_.cactus_size[Utils::toIndex(type)].height,
+        //                  lgfx::colors::TFT_RED);
     }
 
 private:

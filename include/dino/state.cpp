@@ -32,9 +32,9 @@ void GameState::setup()
 
     render_cfg_.bird_come_score = 2000;
     render_cfg_.score_diff = 500;
-    // render_cfg_.score_new_skill = 5000;
-    // TODO(HangX-Ma): change back
-    render_cfg_.score_new_skill = 0;
+    // DONE(HangX-Ma): change back
+    render_cfg_.score_new_skill = 5000;
+    // render_cfg_.score_new_skill = 0;
     render_cfg_.obstacle_max_delay = 2000; // 2s
 
     render_cfg_.screen_width = lcd_->width();
@@ -96,7 +96,7 @@ void GameState::renderBackground()
                            render_cfg_.getPaddingHeight(), 100, TFT_BLACK);
 
     // draw white background and gray padding
-    if (score_.getMarkerCount() >= 2) {
+    if (score_.getMarkerCount() >= 1) {
         score_.clearMarkerCount();
         switchBackground();
     }
@@ -285,7 +285,6 @@ void GameState::reset()
     obstacle_.reset();
     clouds_.reset();
     score_.reset();
-    render_cfg_.game_speed = 25;
 }
 
 } // namespace dino
