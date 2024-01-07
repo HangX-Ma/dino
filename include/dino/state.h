@@ -2,6 +2,7 @@
 #define DINO_STATE_H
 
 #include "dino/bird.h"
+#include "dino/btn.h"
 #include "dino/cactus.h"
 #include "dino/clouds.h"
 #include "dino/dino.h"
@@ -36,6 +37,7 @@ private:
     Clouds clouds_;
     Score score_;
     Obstacle obstacle_;
+    Btn btn_;
 
 private:
     void switchBackground();
@@ -49,10 +51,13 @@ private:
     void renderClouds();
     void renderScore();
     void renderObstacle();
+    void renderBtn();
 
     void clearCanvas() { screen_->clear(); }
     void updateCanvas() { screen_->pushSprite(0, 0); }
     void scanKeyboard();
+
+    void reset();
 
 private:
     LGFX *lcd_{nullptr};

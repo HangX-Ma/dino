@@ -53,6 +53,14 @@ public:
         return false;
     }
 
+    void reset()
+    {
+        pos_ = {-0xFFFF, 0};
+        bird_count_ = 0;
+        bird_tick_ = 0;
+        is_finished_ = false;
+    }
+
     BoundingBox_t getBoundingBox() { return bounding_box_; }
 
 private:

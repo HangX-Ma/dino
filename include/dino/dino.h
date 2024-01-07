@@ -118,6 +118,16 @@ public:
     void setDinoAliveStatus(bool is_alive) { dino_alive_ = is_alive; }
     bool getDinoAliveStatus() { return dino_alive_; }
 
+    void reset()
+    {
+        walk_count_ = 0;
+        bend_count_ = 0;
+        status_ = DinoStatus::ON_GROUND;
+        is_falling_ = false;
+        dino_tick_ = 0;
+        dino_alive_ = true;
+    }
+
 private:
     void updateBoundingBox(lgfx::LGFX_Sprite *screen)
     {

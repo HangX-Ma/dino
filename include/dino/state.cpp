@@ -26,12 +26,12 @@ void GameState::setup()
 
     // init configuration
     render_cfg_.update_interval = 100;
-    render_cfg_.minimum_interval = 50;
+    render_cfg_.minimum_interval = 60;
     render_cfg_.game_speed = 25;
     render_cfg_.max_game_speed = render_cfg_.update_interval - render_cfg_.minimum_interval;
 
-    render_cfg_.bird_come_score = 0;
-    render_cfg_.score_diff = 100;
+    render_cfg_.bird_come_score = 2000;
+    render_cfg_.score_diff = 500;
 
     render_cfg_.screen_width = lcd_->width();
     render_cfg_.screen_height = lcd_->height();
@@ -57,6 +57,7 @@ void GameState::loop()
         renderScore();
         renderDino();
         renderObstacle();
+        renderBtn();
         updateCanvas();
         render_cfg_.last_ts = Utils::getTimestamp();
     }
@@ -91,7 +92,8 @@ void GameState::renderBackground()
                            render_cfg_.getPaddingHeight(), 100, TFT_BLACK);
 
     // draw white background and gray padding
-    if (Utils::getTimestamp() - bg_tick_ > 5000) {
+    if (score_.getMarkerCount() >= 2) {
+        score_.clearMarkerCount();
         switchBackground();
     }
 
@@ -164,7 +166,7 @@ void GameState::renderDino()
     bool collide = Utils::intersects(dino_.getBoundingBox(), obstacle_.getBoundingBox());
     if (collide) {
         dino_.setDinoAliveStatus(false);
-        spdlog::info("Collision!");
+        spdlog::debug("Collision!");
     }
 }
 void GameState::renderGround() { ground_.update(screen_, render_cfg_, dino_.getDinoAliveStatus()); }
@@ -173,6 +175,17 @@ void GameState::renderScore() { score_.update(screen_, render_cfg_, dino_.getDin
 void GameState::renderObstacle()
 {
     obstacle_.update(screen_, render_cfg_, score_.getScore(), dino_.getDinoAliveStatus());
+}
+
+void GameState::renderBtn()
+{
+    if (!dino_.getDinoAliveStatus()) {
+        btn_.update(screen_, render_cfg_);
+        // check restart command
+        if (action_ == Action::RESTART) {
+            reset();
+        }
+    }
 }
 
 void GameState::scanKeyboard()
@@ -189,6 +202,15 @@ void GameState::scanKeyboard()
     else {
         action_ = Action::NOTHING;
     }
+}
+
+void GameState::reset()
+{
+    dino_.reset();
+    obstacle_.reset();
+    clouds_.reset();
+    score_.reset();
+    render_cfg_.game_speed = 25;
 }
 
 } // namespace dino

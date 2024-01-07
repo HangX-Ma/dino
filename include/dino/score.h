@@ -19,13 +19,15 @@ public:
         screen->setTextColor(render_cfg.prev_background_color);
 
         if (dino_alive) {
-            if (render_cfg.last_ts - score_tick_
-                > render_cfg.update_interval / render_cfg.game_speed)
+            if (render_cfg.last_ts - score_tick_ > std::max(
+                    static_cast<uint16_t>(render_cfg.update_interval - render_cfg.game_speed),
+                    render_cfg.minimum_interval))
             {
                 score_ += 1;
                 // speed up game!
                 if (score_ - score_marker_ > render_cfg.score_diff) {
                     score_marker_ = score_;
+                    marker_count_ += 1;
                     render_cfg.game_speed
                         = std::min(static_cast<uint16_t>(render_cfg.game_speed + 1),
                                    render_cfg.max_game_speed);
@@ -47,12 +49,26 @@ public:
         screen->drawString("HI ", render_cfg.screen_width - hi_x, y);
     }
 
+    void reset()
+    {
+        if (highest_score_ < score_) {
+            highest_score_ = score_;
+        }
+        score_ = 0;
+        score_marker_ = 0;
+        score_tick_ = 0;
+        marker_count_ = 0;
+    }
+
     uint32_t getScore() { return score_; }
+    uint32_t getMarkerCount() { return marker_count_; }
+    void clearMarkerCount() { marker_count_ = 0; }
 
 private:
     uint32_t score_{0};
     uint32_t score_marker_{0};
     uint32_t highest_score_{0};
+    uint32_t marker_count_{0};
 
     std::string score_text_;
     std::string highest_score_text_;

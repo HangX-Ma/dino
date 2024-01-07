@@ -46,6 +46,16 @@ public:
         }
     }
 
+    void reset()
+    {
+        cactus_type_ = CactusType::SMALL;
+        obstacle_type_ = ObstacleType::CACTUS;
+        is_finished_ = false;
+
+        bird_.reset();
+        cactus_.reset();
+    }
+
     BoundingBox_t getBoundingBox()
     {
         switch (obstacle_type_) {

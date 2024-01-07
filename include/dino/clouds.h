@@ -50,11 +50,17 @@ public:
         }
     }
 
+    void reset()
+    {
+        clouds_pos_.clear();
+        clouds_tick_ = 0;
+    }
+
 private:
     Random random_generator_;
     CloudsSize clouds_size_;
     std::vector<Position_t> clouds_pos_;
-    uint32_t clouds_tick_;
+    uint32_t clouds_tick_{0};
 };
 } // namespace dino
 

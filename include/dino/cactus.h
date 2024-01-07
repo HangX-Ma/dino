@@ -83,6 +83,13 @@ public:
         return false;
     }
 
+    void reset()
+    {
+        pos_ = {-0xFFFF, 0};
+        cactus_tick_ = 0;
+        is_finished_ = false;
+    }
+
     BoundingBox_t getBoundingBox() { return bounding_box_; }
 
 private:
