@@ -112,7 +112,11 @@ public:
         printf(">>> - 'Up': Dino jump\n");
         printf(">>> - 'Down': Dino bend over\n");
         printf(">>> - 'Right': Game restart\n");
-        printf(">>> Dino can get special skill if you help it reach 3000 scores!\n\n");
+        printf(">>> Dino can get special skill if you help it reach high scores!\n");
+        printf(">>> - 'Quick Drop(1000 scores)': Dino can obtain the ability to quick drop from "
+               "the air\n");
+        printf(">>> - 'Double Jump(2500 scores)': Dino can obtain the ability to make another jump "
+               "in the air\n\n");
     }
 };
 
