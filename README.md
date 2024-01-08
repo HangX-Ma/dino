@@ -1,6 +1,6 @@
 # Dino
 
-This project reimplement the Google Chrome Dino Game based on LovyanGFX driver. You can now run the game on Linx platform using SDL2 simulator.
+This project reimplement the Google Chrome Dino Game based on LovyanGFX driver. You can now run the game on **Linux** platform using SDL2 simulator. If you want to run the game on **Windows**, please check [win](https://github.com/HangX-Ma/dino/tree/win) branch and follow the guide to do cross complie.
 
 **You Dino can get special skill if you reach high score (I set it to 3000)!**
 
@@ -11,6 +11,8 @@ This project reimplement the Google Chrome Dino Game based on LovyanGFX driver. 
 
 <font size="2" color="#999"><u>Dino Game</u></font>
 </div>
+
+You can use arrow key &uarr; to jump, &darr; to bend over. &rarr; will be used to restart game if your Dino has been dead.
 
 ## Dino Game: On day
 
@@ -71,7 +73,11 @@ cmake --build build -j$(nproc)
 ./build/dino
 ```
 
-You can use arrow key &uarr; to jump, &darr; to bend over. &larr; will be used to restart game if your Dino has been dead.
+## Third Party Library and Tools
+
+- [lovyan03/LovyanGFX](https://github.com/lovyan03/LovyanGFX)
+- [gabime/spdlog](https://github.com/gabime/spdlog)
+- [riuson/lcd-image-converter](https://github.com/riuson/lcd-image-converter)
 
 ## License
 
