@@ -35,7 +35,7 @@ public:
                 random_delay_
                     = random_generator_.nextDouble(0.2, 1) * render_cfg.obstacle_max_delay;
                 obstacle_tick_ = render_cfg.last_ts;
-                spdlog::info("random delay {}", random_delay_);
+                spdlog::debug("random delay {}", random_delay_);
             }
         }
         else {
@@ -58,7 +58,7 @@ public:
                 is_finished_ = false;
                 random_delay_ = random_generator_.nextDouble(0, 1) * render_cfg.obstacle_max_delay;
                 obstacle_tick_ = render_cfg.last_ts;
-                spdlog::info("random delay {}", random_delay_);
+                spdlog::debug("random delay {}", random_delay_);
             }
         }
     }

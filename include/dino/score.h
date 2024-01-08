@@ -31,7 +31,7 @@ public:
                     render_cfg.game_speed
                         = std::min(static_cast<uint16_t>(render_cfg.game_speed + 1),
                                    render_cfg.max_game_speed);
-                    spdlog::info("Game Speed: {}", render_cfg.game_speed);
+                    spdlog::info("Another 500 point! Game speed increase, now {}", render_cfg.game_speed);
                 }
                 score_tick_ = render_cfg.last_ts;
             }

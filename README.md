@@ -2,7 +2,7 @@
 
 This project reimplement the Google Chrome Dino Game based on LovyanGFX driver. You can now run the game on Linx platform using SDL2 simulator.
 
-**You Dino can get special skill if you reach high score!**
+**You Dino can get special skill if you reach high score (I set it to 3000)!**
 
 ## Dino Game Demo
 

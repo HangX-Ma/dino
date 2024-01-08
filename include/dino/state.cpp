@@ -27,13 +27,13 @@ void GameState::setup()
     // init configuration
     render_cfg_.update_interval = 100;
     render_cfg_.minimum_interval = 60;
-    render_cfg_.game_speed = 25;
+    render_cfg_.game_speed = 26;
     render_cfg_.max_game_speed = render_cfg_.update_interval - render_cfg_.minimum_interval;
 
-    render_cfg_.bird_come_score = 2000;
+    render_cfg_.bird_come_score = 1000;
     render_cfg_.score_diff = 500;
     // DONE(HangX-Ma): change back
-    render_cfg_.score_new_skill = 5000;
+    render_cfg_.score_new_skill = 3000;
     // render_cfg_.score_new_skill = 0;
     render_cfg_.obstacle_max_delay = 2000; // 2s
 
