@@ -19,6 +19,9 @@ GameState::~GameState()
 
 void GameState::setup()
 {
+    Utils::showInfo();
+    Utils::showUsage();
+
     lcd_ = new LGFX(240, 240);
     lcd_->init();
     screen_ = new LGFX_Sprite(lcd_);
