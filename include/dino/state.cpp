@@ -1,4 +1,5 @@
 #include "dino/cactus.h"
+#include "dino/dino.h"
 #include "dino/lv_anim.h"
 #include "dino/utils.h"
 #include "dino/state.h"
@@ -30,14 +31,14 @@ void GameState::setup()
     // init configuration
     render_cfg_.update_interval = 100;
     render_cfg_.minimum_interval = 60;
-    render_cfg_.game_speed = 26;
+    render_cfg_.game_speed = 12;
     render_cfg_.max_game_speed = render_cfg_.update_interval - render_cfg_.minimum_interval;
 
-    render_cfg_.bird_come_score = 1000;
+    render_cfg_.bird_come_score = 1200;
     render_cfg_.score_diff = 500;
     // DONE(HangX-Ma): change back
-    render_cfg_.score_new_skill = 3000;
-    // render_cfg_.score_new_skill = 0;
+    render_cfg_.score_skill_quick_down = 1000;
+    render_cfg_.score_skill_double_jump = 2500;
     render_cfg_.obstacle_max_delay = 2000; // 2s
 
     render_cfg_.screen_width = lcd_->width();
@@ -183,9 +184,8 @@ void GameState::renderObstacle()
     obstacle_.update(screen_, render_cfg_, score_.getScore(), dino_.getDinoAliveStatus());
 }
 
-void GameState::renderDialog()
+void GameState::renderDialogOpen()
 {
-    // Render dialog window
     for (int w = 0; w < screen_->width() * 0.8; w += 1) {
         screen_->fillRoundRect((screen_->width() * 0.1 + 3) + screen_->width() * 0.4 - (w / 2.0),
                                screen_->height() * 0.25 + 3, w, screen_->height() * 0.5, 8,
@@ -197,6 +197,27 @@ void GameState::renderDialog()
         updateCanvas();
     }
     SDL_Delay(50);
+}
+
+void GameState::renderDialogClose()
+{
+    for (int w = screen_->width() * 0.8; w > 0; w -= 1) {
+        screen_->clear();
+        renderBackground();
+        screen_->fillRoundRect((screen_->width() * 0.1 + 3) + screen_->width() * 0.4 - (w / 2.0),
+                               screen_->height() * 0.25 + 3, w, screen_->height() * 0.5, 8,
+                               lgfx::colors::TFT_LIGHTGRAY);
+        screen_->fillRoundRect((screen_->width() * 0.1) + screen_->width() * 0.4 - (w / 2.0),
+                               screen_->height() * 0.25, w, screen_->height() * 0.5, 8,
+                               lgfx::colors::TFT_DARKGRAY);
+        SDL_Delay(2);
+        updateCanvas();
+    }
+}
+
+void GameState::renderQuickDownSkillDialog()
+{
+    renderDialogOpen();
 
     screen_->setFont(&fonts::Font8x8C64);
     screen_->setTextDatum(middle_left);
@@ -234,20 +255,50 @@ void GameState::renderDialog()
             break;
         }
     }
+    renderDialogClose();
+}
 
-    // Close dialog window
-    for (int w = screen_->width() * 0.8; w > 0; w -= 1) {
-        screen_->clear();
-        renderBackground();
-        screen_->fillRoundRect((screen_->width() * 0.1 + 3) + screen_->width() * 0.4 - (w / 2.0),
-                               screen_->height() * 0.25 + 3, w, screen_->height() * 0.5, 8,
-                               lgfx::colors::TFT_LIGHTGRAY);
-        screen_->fillRoundRect((screen_->width() * 0.1) + screen_->width() * 0.4 - (w / 2.0),
-                               screen_->height() * 0.25, w, screen_->height() * 0.5, 8,
-                               lgfx::colors::TFT_DARKGRAY);
-        SDL_Delay(2);
-        updateCanvas();
+void GameState::renderDoubleJumpSkillDialog()
+{
+    renderDialogOpen();
+
+    screen_->setFont(&fonts::Font8x8C64);
+    screen_->setTextDatum(middle_left);
+    screen_->setTextColor(TFT_WHITE, lgfx::colors::TFT_WHITE);
+
+    screen_->setTextSize(1.2);
+    screen_->drawCenterString("Congratulations!", screen_->width() / 2 - 3,
+                              render_cfg_.getMiddlePaddingY()
+                                  + render_cfg_.getMiddlePaddingHeight() * 0.2);
+
+    screen_->setTextSize(1);
+    screen_->drawString("Your Dino gets anoth", screen_->width() / 6,
+                        render_cfg_.getMiddlePaddingY()
+                            + render_cfg_.getMiddlePaddingHeight() * 0.35);
+    screen_->drawString("-er new skill. You ", screen_->width() / 6,
+                        render_cfg_.getMiddlePaddingY()
+                            + render_cfg_.getMiddlePaddingHeight() * 0.45);
+    screen_->drawString("can press up arrow ", screen_->width() / 6,
+                        render_cfg_.getMiddlePaddingY()
+                            + render_cfg_.getMiddlePaddingHeight() * 0.55);
+    screen_->drawString("in air to make Dino", screen_->width() / 6,
+                        render_cfg_.getMiddlePaddingY()
+                            + render_cfg_.getMiddlePaddingHeight() * 0.65);
+    screen_->drawString("do another jump!", screen_->width() / 6,
+                        render_cfg_.getMiddlePaddingY()
+                            + render_cfg_.getMiddlePaddingHeight() * 0.75);
+    updateCanvas();
+
+    // wait user to confirm
+    while (true) {
+        scanKeyboard();
+        if (action_ == Action::RESTART) {
+            action_ = Action::NOTHING;
+            dino_.setDinoAliveStatus(true);
+            break;
+        }
     }
+    renderDialogClose();
 }
 
 void GameState::renderBtn()
@@ -256,9 +307,19 @@ void GameState::renderBtn()
         btn_.update(screen_, render_cfg_);
         // check restart command
         if (action_ == Action::RESTART) {
-            if (!dino_.getDinoNewSkillFlag() && score_.getScore() >= render_cfg_.score_new_skill) {
-                renderDialog();
-                dino_.setDinoNewSkill(true);
+            // quick down skill
+            if (!dino_.getDinoSkillBag().type.quick_down
+                && score_.getScore() >= render_cfg_.score_skill_quick_down)
+            {
+                renderQuickDownSkillDialog();
+                dino_.setDinoNewSkill(DinoSkillType::QUICK_DOWN);
+            }
+            // double jump skill
+            if (!dino_.getDinoSkillBag().type.double_jump
+                && score_.getScore() >= render_cfg_.score_skill_double_jump)
+            {
+                renderDoubleJumpSkillDialog();
+                dino_.setDinoNewSkill(DinoSkillType::DOUBLE_JUMP);
             }
             reset();
         }
