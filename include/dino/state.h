@@ -52,7 +52,11 @@ private:
     void renderScore();
     void renderObstacle();
     void renderBtn();
-    void renderDialog();
+
+    void renderDialogOpen();
+    void renderDialogClose();
+    void renderQuickDownSkillDialog();
+    void renderDoubleJumpSkillDialog();
 
     void clearCanvas() { screen_->clear(); }
     void updateCanvas() { screen_->pushSprite(0, 0); }

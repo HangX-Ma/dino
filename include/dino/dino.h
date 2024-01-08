@@ -19,6 +19,23 @@
 namespace dino
 {
 
+enum class DinoSkillType : uint8_t
+{
+    QUICK_DOWN,
+    DOUBLE_JUMP,
+};
+
+union DinoSkillBag
+{
+    uint8_t skill_bitwise;
+    struct Skill
+    {
+        uint8_t quick_down : 1;
+        uint8_t double_jump : 1;
+        uint8_t : 6;
+    } type;
+};
+
 enum class DinoState : uint8_t
 {
     STAND_LEFT,
@@ -74,13 +91,15 @@ public:
         // If Dino is on the ground, it can jump or bend over
         case DinoStatus::ON_GROUND:
         {
+            // reset double jump CD
+            double_jump_used_ = false;
             switch (action) {
             case Action::BEND_OVER:
                 status_ = DinoStatus::BEND_OVER;
                 break;
             case Action::JUMP:
                 status_ = DinoStatus::IN_AIR;
-                jump(render_cfg);
+                jump(render_cfg, false);
                 break;
             default:
                 walk(screen, render_cfg, pos_);
@@ -93,12 +112,21 @@ public:
             if (stiff(screen, render_cfg, pos_)) {
                 status_ = DinoStatus::ON_GROUND;
             }
-            if (dino_new_skill_) {
+            if (dino_skill_.type.quick_down) {
                 if (action == Action::BEND_OVER) {
+                    is_falling_ = false;
                     status_ = DinoStatus::BEND_OVER;
+                    break;
                 }
             }
-
+            if (dino_skill_.type.double_jump) {
+                if (!double_jump_used_ && is_falling_ && action == Action::JUMP) {
+                    is_falling_ = false;
+                    double_jump_used_ = true;
+                    jump(render_cfg, true);
+                    break;
+                }
+            }
             break;
         }
         // Dino bend over
@@ -123,8 +151,22 @@ public:
     BoundingBox_t getBoundingBox() { return bounding_box_; }
     void setDinoAliveStatus(bool is_alive) { dino_alive_ = is_alive; }
     bool getDinoAliveStatus() { return dino_alive_; }
-    void setDinoNewSkill(bool val) { dino_new_skill_ = val; }
-    bool getDinoNewSkillFlag() { return dino_new_skill_; }
+    void setDinoNewSkill(DinoSkillType type)
+    {
+        switch (type) {
+        case DinoSkillType::QUICK_DOWN:
+        {
+            dino_skill_.type.quick_down = true;
+            break;
+        }
+        case DinoSkillType::DOUBLE_JUMP:
+        {
+            dino_skill_.type.double_jump = true;
+            break;
+        }
+        }
+    }
+    DinoSkillBag getDinoSkillBag() { return dino_skill_; }
 
     void reset()
     {
@@ -134,6 +176,7 @@ public:
         is_falling_ = false;
         dino_tick_ = 0;
         dino_alive_ = true;
+        double_jump_used_ = false;
     }
 
 private:
@@ -167,7 +210,7 @@ private:
         // start fall down animation after reaching the top
         if (!is_falling_ && dino_anim_.isFinished(render_cfg.last_ts)) {
             dino_anim_.setPathCallback(lvgl::LVAnimPathType::EASE_IN);
-            dino_anim_.setDuration(dino_anim_duration_);
+            dino_anim_.setDuration(dino_anim_duration_ * 50 / render_cfg.game_speed);
             dino_anim_.setValues(pos_.y, render_cfg.getBottomPaddingY()
                                              - render_cfg.getMiddlePaddingHeight() * 0.39);
             dino_anim_.setCurrentValue(render_cfg.last_ts);
@@ -183,13 +226,21 @@ private:
         return false;
     }
 
-    void jump(RenderConfig_t &render_cfg)
+    void jump(RenderConfig_t &render_cfg, bool double_jump)
     {
         dino_anim_.setPathCallback(lvgl::LVAnimPathType::EASE_OUT);
         dino_anim_.setDuration(dino_anim_duration_);
-        dino_anim_.setValues(
-            render_cfg.getBottomPaddingY() - render_cfg.getMiddlePaddingHeight() * 0.39,
-            render_cfg.getMiddlePaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2);
+        // jump in the air
+        if (double_jump) {
+            dino_anim_.setValues(pos_.y, render_cfg.getMiddlePaddingY()
+                                             + render_cfg.getMiddlePaddingHeight() * 0.2);
+        }
+        // jump from the ground
+        else {
+            dino_anim_.setValues(
+                render_cfg.getBottomPaddingY() - render_cfg.getMiddlePaddingHeight() * 0.39,
+                render_cfg.getMiddlePaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2);
+        }
         dino_anim_.setCurrentValue(render_cfg.last_ts);
     }
 
@@ -243,7 +294,8 @@ private:
     uint32_t dino_anim_duration_{200};
 
     bool dino_alive_{true};
-    bool dino_new_skill_{false};
+    DinoSkillBag dino_skill_{0};
+    bool double_jump_used_{false};
 };
 } // namespace dino
 
