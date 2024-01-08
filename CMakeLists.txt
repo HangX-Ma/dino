@@ -1,14 +1,25 @@
 # See how to install sdl2: https://wiki.libsdl.org/SDL2/Installation
 cmake_minimum_required (VERSION 3.8)
 
+set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc-posix)
+set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++-posix)
+message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
+message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
+set(CMAKE_EXE_LINKER_FLAGS "-static")
+
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # project name
 project(dino LANGUAGES CXX C)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
         set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose Release or Debug" FORCE)
 endif()
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_definitions(-DLGFX_SDL)
 
@@ -27,8 +38,6 @@ file(GLOB LGFX_SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS
     )
 file(GLOB DINO_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/include/dino/*.cpp)
 
-add_subdirectory(library/spdlog)
-
 add_executable(${PROJECT_NAME} ${LGFX_SRCS} ${DINO_SRCS})
 target_include_directories(
     ${PROJECT_NAME} PUBLIC
@@ -36,22 +45,8 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/simulator
     ${CMAKE_CURRENT_SOURCE_DIR}/library/LovyanGFX/src
     )
-target_link_libraries(${PROJECT_NAME} spdlog)
 
-find_package(SDL2 REQUIRED SDL2)
-if (SDL2_FOUND)
-    message(STATUS "Packaged version of SDL2 will be used.")
-else()
-    message(STATUS "Bundled version of SDL2 will be downloaded and used.")
-    include(FetchContent)
-    FetchContent_Declare(
-        SDL2
-        GIT_REPOSITORY  https://github.com/libsdl-org/SDL.git
-        GIT_TAG         5773c347d58d07a45b33ac4ecc93fd3e6a86d483
-    )
-    FetchContent_MakeAvailable(SDL2)
-    set(SDL2_LIBRARIES ${SDL2_LIBRARIES} SDL2main SDL2-static SDL2_image-static)
-endif()
-include_directories(${SDL2_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} -lpthread ${SDL2_LIBRARIES})
+set(SDL2_LIB_PATH "$ENV{HOME}/SDL2-2.28.5/x86_64-w64-mingw32/lib")
+target_include_directories(${PROJECT_NAME} PUBLIC "$ENV{HOME}/SDL2-2.28.5/x86_64-w64-mingw32/include" library/mingw_stdthreads)
+target_link_libraries(${PROJECT_NAME} PUBLIC "${SDL2_LIB_PATH}/libSDL2.dll.a")
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

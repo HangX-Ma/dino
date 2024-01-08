@@ -1,12 +1,10 @@
 #ifndef DINO_OBSTACLE_H
 #define DINO_OBSTACLE_H
 
-#include "SDL_joystick.h"
 #include "dino/bird.h"
 #include "dino/cactus.h"
 #include "dino/random.h"
 #include "lgfx/v1/misc/enum.hpp"
-#include "spdlog/spdlog.h"
 
 namespace dino
 {
@@ -35,7 +33,6 @@ public:
                 random_delay_
                     = random_generator_.nextDouble(0.2, 1) * render_cfg.obstacle_max_delay;
                 obstacle_tick_ = render_cfg.last_ts;
-                spdlog::debug("random delay {}", random_delay_);
             }
         }
         else {
@@ -58,7 +55,6 @@ public:
                 is_finished_ = false;
                 random_delay_ = random_generator_.nextDouble(0, 1) * render_cfg.obstacle_max_delay;
                 obstacle_tick_ = render_cfg.last_ts;
-                spdlog::debug("random delay {}", random_delay_);
             }
         }
     }

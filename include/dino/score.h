@@ -3,7 +3,6 @@
 
 #include "dino/utils.h"
 #include "lgfx/v1/LGFX_Sprite.hpp"
-#include "spdlog/spdlog.h"
 namespace dino
 {
 
@@ -31,7 +30,7 @@ public:
                     render_cfg.game_speed
                         = std::min(static_cast<uint16_t>(render_cfg.game_speed + 1),
                                    render_cfg.max_game_speed);
-                    spdlog::info("Another 500 point! Game speed increase, now {}", render_cfg.game_speed);
+                    printf("[Dino]: Another 500 point! Game speed increase, now %d\n", render_cfg.game_speed);
                 }
                 score_tick_ = render_cfg.last_ts;
             }

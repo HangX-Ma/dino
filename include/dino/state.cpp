@@ -170,7 +170,6 @@ void GameState::renderDino()
     bool collide = Utils::intersects(dino_.getBoundingBox(), obstacle_.getBoundingBox());
     if (collide) {
         dino_.setDinoAliveStatus(false);
-        spdlog::debug("Collision!");
     }
 }
 void GameState::renderGround() { ground_.update(screen_, render_cfg_, dino_.getDinoAliveStatus()); }

@@ -12,7 +12,6 @@
 #include "dino/utils.h"
 #include "lgfx/v1/misc/enum.hpp"
 #include "lgfx/v1/LGFX_Sprite.hpp"
-#include "spdlog/spdlog.h"
 
 #include <type_traits>
 
@@ -116,8 +115,6 @@ public:
         }
         }
         updateBoundingBox(screen);
-        spdlog::debug("DinoAction: {}, DinoState: {}", DINO_ACTION_STR[Utils::toIndex(action)],
-                      DINO_STATUS_STR[Utils::toIndex(status_)]);
     }
 
     BoundingBox_t getBoundingBox() { return bounding_box_; }
