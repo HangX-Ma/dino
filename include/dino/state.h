@@ -55,7 +55,7 @@ private:
 
     void renderDialogOpen();
     void renderDialogClose();
-    void renderQuickDownSkillDialog();
+    void renderQuickDropSkillDialog();
     void renderDoubleJumpSkillDialog();
 
     void clearCanvas() { screen_->clear(); }

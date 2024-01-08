@@ -30,7 +30,7 @@ using RenderConfig_t = struct RenderConfig
     uint16_t minimum_interval;
 
     uint32_t score_diff;
-    uint32_t score_skill_quick_down;
+    uint32_t score_skill_quick_drop;
     uint32_t score_skill_double_jump;
     uint32_t bird_come_score;
     uint32_t obstacle_max_delay;
