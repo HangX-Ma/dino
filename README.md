@@ -2,7 +2,7 @@
 
 This project reimplement the Google Chrome Dino Game based on LovyanGFX driver. The `win` branch is used for cross compile that can generate executable program running on Windows.
 
-**You Dino can get special skill if you reach high score (I set it to 3000)!**
+**You Dino can get special skill if you reach high score!**
 
 ## Dino Game Demo
 
@@ -11,6 +11,9 @@ This project reimplement the Google Chrome Dino Game based on LovyanGFX driver. 
 
 <font size="2" color="#999"><u>Dino Game</u></font>
 </div>
+
+- **Quick Drop:** If you help Dino gets 1000 scores, Dino can obtain the ability to quick drop from the air. (&darr;)
+- **Double Jump:** If you help Dino gets 2500 scores, Dino can obtain the ability to make another jump in the air. (&uarr;)
 
 You can use arrow key &uarr; to jump, &darr; to bend over. &rarr; will be used to restart game if your Dino has been dead.
 

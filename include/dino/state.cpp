@@ -37,7 +37,7 @@ void GameState::setup()
     render_cfg_.bird_come_score = 1200;
     render_cfg_.score_diff = 500;
     // DONE(HangX-Ma): change back
-    render_cfg_.score_skill_quick_down = 1000;
+    render_cfg_.score_skill_quick_drop = 1000;
     render_cfg_.score_skill_double_jump = 2500;
     render_cfg_.obstacle_max_delay = 2000; // 2s
 
@@ -215,7 +215,7 @@ void GameState::renderDialogClose()
     }
 }
 
-void GameState::renderQuickDownSkillDialog()
+void GameState::renderQuickDropSkillDialog()
 {
     renderDialogOpen();
 
@@ -307,12 +307,12 @@ void GameState::renderBtn()
         btn_.update(screen_, render_cfg_);
         // check restart command
         if (action_ == Action::RESTART) {
-            // quick down skill
-            if (!dino_.getDinoSkillBag().type.quick_down
-                && score_.getScore() >= render_cfg_.score_skill_quick_down)
+            // quick drop skill
+            if (!dino_.getDinoSkillBag().type.quick_drop
+                && score_.getScore() >= render_cfg_.score_skill_quick_drop)
             {
-                renderQuickDownSkillDialog();
-                dino_.setDinoNewSkill(DinoSkillType::QUICK_DOWN);
+                renderQuickDropSkillDialog();
+                dino_.setDinoNewSkill(DinoSkillType::QUICK_DROP);
             }
             // double jump skill
             if (!dino_.getDinoSkillBag().type.double_jump

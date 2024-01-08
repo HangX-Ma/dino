@@ -20,7 +20,7 @@ namespace dino
 
 enum class DinoSkillType : uint8_t
 {
-    QUICK_DOWN,
+    QUICK_DROP,
     DOUBLE_JUMP,
 };
 
@@ -29,7 +29,7 @@ union DinoSkillBag
     uint8_t skill_bitwise;
     struct Skill
     {
-        uint8_t quick_down : 1;
+        uint8_t quick_drop : 1;
         uint8_t double_jump : 1;
         uint8_t : 6;
     } type;
@@ -111,7 +111,7 @@ public:
             if (stiff(screen, render_cfg, pos_)) {
                 status_ = DinoStatus::ON_GROUND;
             }
-            if (dino_skill_.type.quick_down) {
+            if (dino_skill_.type.quick_drop) {
                 if (action == Action::BEND_OVER) {
                     is_falling_ = false;
                     status_ = DinoStatus::BEND_OVER;
@@ -151,9 +151,9 @@ public:
     void setDinoNewSkill(DinoSkillType type)
     {
         switch (type) {
-        case DinoSkillType::QUICK_DOWN:
+        case DinoSkillType::QUICK_DROP:
         {
-            dino_skill_.type.quick_down = true;
+            dino_skill_.type.quick_drop = true;
             break;
         }
         case DinoSkillType::DOUBLE_JUMP:

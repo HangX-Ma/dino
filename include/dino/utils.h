@@ -39,7 +39,7 @@ using RenderConfig_t = struct RenderConfig
     uint16_t minimum_interval;
 
     uint32_t score_diff;
-    uint32_t score_skill_quick_down;
+    uint32_t score_skill_quick_drop;
     uint32_t score_skill_double_jump;
     uint32_t bird_come_score;
     uint32_t obstacle_max_delay;
@@ -100,13 +100,14 @@ public:
     {
         /* Print logo */
         printf("\n%s"
-                     "\n - @author HangX-Ma\n"
-                     " - @version v1.0.0\n"
-                     " - @build at %s %s\n\n",
-                     DINO_LOGO.c_str(), __TIME__, __DATE__);
+               "\n - @author HangX-Ma\n"
+               " - @version v1.0.0\n"
+               " - @build at %s %s\n\n",
+               DINO_LOGO.c_str(), __TIME__, __DATE__);
     }
 
-    static void showUsage() {
+    static void showUsage()
+    {
         printf(">>> Use the following keys to escape cactus and bird!\n");
         printf(">>> - 'Up': Dino jump\n");
         printf(">>> - 'Down': Dino bend over\n");
