@@ -1,8 +1,8 @@
 # Dino
 
-This project reimplement the Google Chrome Dino Game based on LovyanGFX driver. You can now run the game on **Linux** platform using SDL2 simulator. If you want to run the game on **Windows**, please check [win](https://github.com/HangX-Ma/dino/tree/win) branch and follow the guide to do cross compile.
+This project reimplements the Google Chrome Dino Game. It is based on LovyanGFX driver and further will be migrated to ESP32-S3 board. You can now run the game on **Linux** platform using SDL2 simulator. If you want to run the game on **Windows**, please check branch **[win](https://github.com/HangX-Ma/dino/tree/win)** and follow the guidance to do cross compile.
 
-**You Dino can get special skill if you reach high score!**
+**Dino can get special skills if you help it reach high scores!**
 
 ## Dino Game Demo
 
@@ -12,10 +12,10 @@ This project reimplement the Google Chrome Dino Game based on LovyanGFX driver. 
 <font size="2" color="#999"><u>Dino Game</u></font>
 </div>
 
-- **Quick Drop:** If you help Dino gets 1000 scores, Dino can obtain the ability to quick drop from the air. (&darr;)
-- **Double Jump:** If you help Dino gets 2500 scores, Dino can obtain the ability to make another jump in the air. (&uarr;)
+- **Quick Drop:** If Dino gets 1000 scores, it can obtain the ability to quick drop from the air. (&darr;)
+- **Double Jump:** If Dino gets 2500 scores, it can obtain the ability to make another jump in the air. (&uarr;)
 
-You can use arrow key &uarr; to jump, &darr; to bend over. &rarr; will be used to restart game if your Dino has been dead.
+You can use arrow key &uarr; to jump, &darr; to bend over. &rarr; will be used to restart game if Dino has dead.
 
 ## Dino Game: On day
 
