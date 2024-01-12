@@ -74,8 +74,10 @@ You can use arrow key &uarr; to jump, &darr; to bend over. &rarr; will be used t
 
     ```bash
     sudo apt-get update
-    sudo apt-get install mingw-w64-x86-64-dev
-    sudo apt-get install mingw-w64-tools
+    # optional
+    # sudo apt-get install mingw-w64-x86-64-dev
+    # sudo apt-get install mingw-w64-tools
+    sudo apt-get install g++-mingw-w64-x86-64-posix
     ```
 
 - Download [SDL2-devel-2.28.5-mingw.tar.gz](https://github.com/libsdl-org/SDL/releases/tag/release-2.28.5) to your **HOME** and compile it. If `make cross` fails, you need to change `CROSS_PATH` in `Makefile` to `/usr`
