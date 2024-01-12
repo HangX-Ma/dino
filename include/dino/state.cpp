@@ -348,6 +348,10 @@ void GameState::reset()
     obstacle_.reset();
     clouds_.reset();
     score_.reset();
+    // restore global config
+    render_cfg_.game_speed = 12;
+    render_cfg_.background_color = lgfx::colors::TFT_WHITE;
+    render_cfg_.prev_background_color = lgfx::colors::TFT_BLACK;
 }
 
 } // namespace dino
