@@ -6,3 +6,7 @@
 	path = library/spdlog
 	url = https://github.com/gabime/spdlog.git
 	branch = v1.x
+
+[submodule "library/mingw_stdthreads"]
+    path = library/mingw_stdthreads
+	url = https://github.com/meganz/mingw-std-threads.git

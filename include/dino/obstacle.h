@@ -83,6 +83,7 @@ public:
         case ObstacleType::CACTUS:
             return cactus_.getBoundingBox();
         }
+        throw std::invalid_argument("Invalid obstacle type");
     }
 
 private:
