@@ -29,7 +29,7 @@
 // clang-format off
 #include <cstdint>
 
-static const uint8_t image_data_cactus3[512] = {
+static const uint8_t IMAGE_DATA_CACTUS_SMALL[512] = {
     // ∙∙∙∙███▓▓▓█▒∙∙∙∙
     // ∙∙∙∙∙█▒░░░▓██∙∙∙
     // ∙∙∙∙██▒░░░▒██∙∙∙

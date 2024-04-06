@@ -1,8 +1,7 @@
-#ifndef DINO_FPS_H
-#define DINO_FPS_H
+#ifndef INCLUDE_DINO_FPS_H_
+#define INCLUDE_DINO_FPS_H_
 
 #include "dino/utils.h"
-#include "lgfx/v1/LGFX_Sprite.hpp"
 #include <string>
 
 namespace dino
@@ -10,7 +9,7 @@ namespace dino
 
 class FPS
 {
-public:
+ public:
     const std::string &update()
     {
         if (Utils::getTimestamp() - time_stamp_ > 1000 /*ms*/) {
@@ -24,13 +23,13 @@ public:
         return text_;
     }
 
-private:
+ private:
     uint32_t fps_{0};
     uint32_t time_stamp_{0};
     uint32_t frame_{0};
     std::string text_;
 };
 
-} // namespace dino
+}  // namespace dino
 
-#endif
+#endif  // INCLUDE_DINO_FPS_H_

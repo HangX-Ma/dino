@@ -12,8 +12,7 @@ int userFunc(bool *running)
     game.setup();
     do {
         game.loop();
-    }
-    while (*running);
+    } while (*running);
     return 0;
 }
 

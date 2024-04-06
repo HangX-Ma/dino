@@ -1,6 +1,6 @@
 Language:        Cpp
 # BasedOnStyle:  Google
-AccessModifierOffset: -4
+AccessModifierOffset: -3
 AlignAfterOpenBracket: Align
 AlignArrayOfStructures: Right
 AlignConsecutiveMacros: None
@@ -39,7 +39,7 @@ BraceWrapping:
   AfterUnion:      true
   AfterExternBlock: true
   BeforeCatch:     true
-  BeforeElse:      true
+  BeforeElse:      false
   BeforeLambdaBody: true
   BeforeWhile:     true
   IndentBraces:    false
@@ -161,7 +161,7 @@ SpaceAroundPointerQualifiers: Default
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
-SpacesBeforeTrailingComments: 1
+SpacesBeforeTrailingComments: 2
 SpacesInAngles:  Never
 SpacesInConditionalStatement: false
 SpacesInContainerLiterals: true

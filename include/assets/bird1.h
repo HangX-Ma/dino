@@ -28,9 +28,9 @@
 */
 
 // clang-format off
-#include <stdint.h>
+#include <cstdint>
 
-static const uint8_t image_data_bird1[1120] = {
+static const uint8_t IMAGE_DATA_BIRD1[1120] = {
     // ∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙
     // ∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙
     // ∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙

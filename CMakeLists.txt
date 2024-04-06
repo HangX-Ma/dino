@@ -8,6 +8,27 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
         set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose Release or Debug" FORCE)
 endif()
 
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+    message(STATUS "Maximum optimization for speed")
+    add_compile_options(-Ofast)
+elseif("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
+    message(STATUS "Maximum optimization for speed, debug info included")
+    add_compile_options(-Ofast -g)
+elseif("${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel")
+    message(STATUS "Maximum optimization for size")
+    add_compile_options(-Os)
+else()
+    message(STATUS "Minimal optimization, debug info included")
+    add_compile_options(-Og -g)
+endif()
+
+add_compile_options(
+    # -Wall # print warning info
+    # -Wextra # print extra warning info
+    # -Wconversion # data conversion truncation warning
+    # -Wsign-conversion # sign <-> unsigned conversion warning
+)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_definitions(-DLGFX_SDL)

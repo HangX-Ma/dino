@@ -1,7 +1,9 @@
-#ifndef DINO_GROUND_H
-#define DINO_GROUND_H
+#ifndef INCLUDE_DINO_GROUND_H_
+#define INCLUDE_DINO_GROUND_H_
 
+#include <memory>
 #include "dino/utils.h"
+#include "dino/common.h"
 #include "assets/ground.h"
 #include "lgfx/v1/LGFX_Sprite.hpp"
 
@@ -16,36 +18,36 @@ struct GroundSize
 
 class Ground
 {
-public:
-    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, bool dino_alive)
+ public:
+    void update(std::shared_ptr<lgfx::LGFX_Sprite> &screen)
     {
-        if (dino_alive) {
-            if (render_cfg.last_ts - ground_tick_ > std::max(
-                    static_cast<uint16_t>(render_cfg.update_interval - render_cfg.game_speed),
-                    render_cfg.minimum_interval))
-            {
-                pos_.x -= render_cfg.game_speed;
-                if (pos_.x < -(ground_size_.width * render_cfg.zoom_x - render_cfg.screen_width)) {
-                    pos_.x = 0;
+        auto render_cfg = RenderConfig::getInstance();
+        if (render_cfg->dino_alive) {
+            auto &&update_interval = render_cfg->getUpdateInterval();
+            if (render_cfg->last_ts - ground_tick_ > update_interval) {
+                position_.x -= render_cfg->game_speed;
+                if (position_.x < -(width_ * render_cfg->zoom_x - render_cfg->screen_width)) {
+                    position_.x = 0;
                 }
-                ground_tick_ = render_cfg.last_ts;
+                ground_tick_ = render_cfg->last_ts;
             }
-            pos_.y
-                = render_cfg.getBottomPaddingY() + render_cfg.getMiddlePaddingHeight() * 0.2 + 64;
+            position_.y
+                = render_cfg->getBottomPaddingY() + render_cfg->getMiddlePaddingHeight() * 0.2 + 64;
         }
 
         screen->pushGrayscaleImageRotateZoom(
-            pos_.x, pos_.y, pos_.x, pos_.y, 0, render_cfg.zoom_x, render_cfg.zoom_y,
-            ground_size_.width, ground_size_.height, image_data_ground, render_cfg.depth,
-            render_cfg.prev_background_color, render_cfg.background_color);
+            position_.x, position_.y, position_.x, position_.y, 0, render_cfg->zoom_x,
+            render_cfg->zoom_y, width_, height_, image_data_ground, render_cfg->depth,
+            render_cfg->prev_background_color, render_cfg->background_color);
     }
 
-private:
-    GroundSize ground_size_;
-    Position_t pos_{0, 0};
+ private:
+    int32_t width_{2400};
+    int32_t height_{20};
+    Position_t position_{0, 0};
     uint32_t ground_tick_{0};
 };
 
-} // namespace dino
+}  // namespace dino
 
-#endif
+#endif  // INCLUDE_DINO_GROUND_H_

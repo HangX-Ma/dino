@@ -1,9 +1,13 @@
-#ifndef DINO_BIRD_H
-#define DINO_BIRD_H
+#ifndef INCLUDE_DINO_BIRD_H_
+#define INCLUDE_DINO_BIRD_H_
 
+#include <memory>
+#include <utility>
+#include <unordered_map>
+#include "dino/obstacle.h"
 #include "dino/utils.h"
+#include "dino/common.h"
 #include "lgfx/v1/LGFX_Sprite.hpp"
-#include "lgfx/v1/misc/enum.hpp"
 
 #include "assets/bird1.h"
 #include "assets/bird2.h"
@@ -11,80 +15,51 @@
 namespace dino
 {
 
-struct BirdSize
+enum class BirdEnum : uint8_t
 {
-    const int32_t width{35};
-    const int32_t height{32};
-    const int32_t bonding_offset{5};
+    WING_DOWN = 0,
+    WING_UP,
+    MAX_BIRD_STATE,
 };
 
-static const uint8_t *bird_state_map[2] = {image_data_bird1, image_data_bird2};
+static const uint8_t *bird_state_map[2] = {IMAGE_DATA_BIRD1, IMAGE_DATA_BIRD2};
 
-class Bird
+class Bird : public Obstacle
 {
-public:
-    bool update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, bool dino_alive)
+ public:
+    explicit Bird(int width = 35, int height = 32, int offset = 5,
+                  BirdEnum estate = BirdEnum::WING_DOWN)
+        : Obstacle(width, height, offset), estate(estate)
     {
-        if (dino_alive) {
-            if (render_cfg.last_ts - bird_tick_ > std::max(
-                    static_cast<uint16_t>(render_cfg.update_interval - render_cfg.game_speed),
-                    render_cfg.minimum_interval))
-            {
-                bird_count_ = (bird_count_ + 1) % 2;
-                bird_tick_ = render_cfg.last_ts;
-            }
-            pos_.x -= render_cfg.game_speed / 4;
-            if (pos_.x < 0 - bird_size_.width) {
-                pos_.x = render_cfg.screen_width;
-                is_finished_ = true;
-            }
-            pos_.y = render_cfg.getMiddlePaddingY() + render_cfg.getMiddlePaddingHeight() * 0.42;
-        }
-
-        screen->pushGrayscaleImage(pos_.x, pos_.y, bird_size_.width, bird_size_.height,
-                                   bird_state_map[bird_count_], render_cfg.depth,
-                                   render_cfg.prev_background_color, render_cfg.background_color);
-        updateBoundingBox(screen);
-
-        if (is_finished_) {
-            is_finished_ = false;
-            return true;
-        }
-        return false;
+    }
+    Bird(const ObstacleSize_t &size, BirdEnum estate) : Obstacle(size), estate(estate) {}
+    bool update(std::shared_ptr<lgfx::LGFX_Sprite> &screen)
+    {
+        auto render_cfg = RenderConfig::getInstance();
+        auto new_position
+            = Position_t{render_cfg->game_speed / 4,
+                         static_cast<int32_t>(render_cfg->getMiddlePaddingY()
+                                              + render_cfg->getMiddlePaddingHeight() * 0.42)};
+        return Obstacle::update(screen, position, new_position,
+                                bird_state_map[Utils::toIndex(estate)]);
     }
 
-    void reset()
+    void setPosition(Position_t new_position) { position = new_position; }
+    void setBirdState(BirdEnum new_state) { estate = new_state; }
+    BirdEnum getBirdState() const { return estate; }
+
+    void resetState() override
     {
-        pos_ = {-0xFFFF, 0};
-        bird_count_ = 0;
-        bird_tick_ = 0;
-        is_finished_ = false;
+        Obstacle::resetState();
+        estate = BirdEnum::WING_DOWN;
+        position = {-0xFFFF, 0};
     }
 
-    BoundingBox_t getBoundingBox() { return bounding_box_; }
-
-private:
-    void updateBoundingBox(lgfx::LGFX_Sprite *screen)
-    {
-        bounding_box_.upper_left.x = pos_.x;
-        bounding_box_.upper_left.y = pos_.y;
-        bounding_box_.lower_right.x
-            = bounding_box_.upper_left.x + bird_size_.width - bird_size_.bonding_offset;
-        bounding_box_.lower_right.y = bounding_box_.upper_left.y + bird_size_.height;
-        // TODO(HangX-Ma): debug usage, draw box
-        // screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y,
-        //                  bird_size_.width - bird_size_.bonding_offset, bird_size_.height,
-        //                  lgfx::colors::TFT_RED);
-    }
-
-private:
-    BoundingBox_t bounding_box_;
-    BirdSize bird_size_;
-    Position_t pos_{-0xFFFF, 0};
-    uint32_t bird_count_{0};
-    uint32_t bird_tick_;
-    bool is_finished_{false};
+ protected:
+    BirdEnum estate;
+    Position_t position{-0xFFFF, 0};
 };
-} // namespace dino
 
-#endif
+}  // namespace dino
+
+#endif  // INCLUDE_DINO_BIRD_H_

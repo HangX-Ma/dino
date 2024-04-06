@@ -1,106 +1,105 @@
-#ifndef DINO_OBSTACLE_H
-#define DINO_OBSTACLE_H
 
-#include "SDL_joystick.h"
-#include "dino/bird.h"
-#include "dino/cactus.h"
-#include "dino/random.h"
-#include "lgfx/v1/misc/enum.hpp"
-#include "spdlog/spdlog.h"
+#ifndef INCLUDE_DINO_OBSTACLE_H_
+#define INCLUDE_DINO_OBSTACLE_H_
+
+#include <memory>
+#include "dino/utils.h"
+#include "dino/common.h"
+#include "lgfx/v1/LGFX_Sprite.hpp"
 
 namespace dino
 {
 
-enum class ObstacleType
+using ObstacleSize_t = struct ObstacleSize
 {
-    BIRD,
-    CACTUS,
+    int32_t width;
+    int32_t height;
+    int32_t bonding_offset;
 };
 
 class Obstacle
 {
-public:
-    void update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, uint32_t score,
-                bool dino_alive)
+ public:
+    Obstacle(int width, int height, int offset = 0)
+        : Obstacle(ObstacleSize_t{width, height, offset})
     {
-        if (render_cfg.last_ts - obstacle_tick_ < random_delay_) {
-            return;
-        }
+    }
 
-        if (score < render_cfg.bird_come_score) {
-            is_finished_ = updateCactus(screen, render_cfg, dino_alive);
+    explicit Obstacle(const ObstacleSize_t &size) : size(size) {}
+    virtual ~Obstacle() = default;
 
-            if (is_finished_) {
-                is_finished_ = false;
-                random_delay_
-                    = random_generator_.nextDouble(0.2, 1) * render_cfg.obstacle_max_delay;
-                obstacle_tick_ = render_cfg.last_ts;
-                spdlog::debug("random delay {}", random_delay_);
-            }
-        }
-        else {
-            switch (obstacle_type_) {
-            case ObstacleType::BIRD:
-                is_finished_ = updateBird(screen, render_cfg, dino_alive);
-                break;
-            case ObstacleType::CACTUS:
-                is_finished_ = updateCactus(screen, render_cfg, dino_alive);
-                break;
-            }
+    virtual void resetState()
+    {
+        tick = 0;
+        tick_updated = false;
+        is_finished = false;
+    }
 
-            if (is_finished_) {
-                if (random_generator_.nextDouble(0, 1) > 0.3) {
-                    obstacle_type_ = ObstacleType::CACTUS;
+     bool update(std::shared_ptr<lgfx::LGFX_Sprite> &screen, Position_t &position,
+                const Position_t &new_position, const uint8_t *image)
+    {
+        auto render_cfg = RenderConfig::getInstance();
+        if (render_cfg->dino_alive) {
+            // calculate current canvas update rate
+            auto &&update_interval = render_cfg->getUpdateInterval();
+            if (render_cfg->last_ts - tick > update_interval) {
+                tick_updated = true;
+                tick = render_cfg->last_ts;
+                // move cactus
+                position.x -= new_position.x;
+                if (position.x < 0 - size.width) {
+                    position.x = render_cfg->screen_width;
+                    is_finished = true;
                 }
-                else {
-                    obstacle_type_ = ObstacleType::BIRD;
-                }
-                is_finished_ = false;
-                random_delay_ = random_generator_.nextDouble(0, 1) * render_cfg.obstacle_max_delay;
-                obstacle_tick_ = render_cfg.last_ts;
-                spdlog::debug("random delay {}", random_delay_);
             }
+            position.y = new_position.y;
         }
-    }
 
-    void reset()
-    {
-        cactus_type_ = CactusType::SMALL;
-        obstacle_type_ = ObstacleType::CACTUS;
-        is_finished_ = false;
-        random_delay_ = 0;
-        obstacle_tick_ = 0;
+        screen->pushGrayscaleImage(position.x, position.y, size.width, size.height, image,
+                                   render_cfg->depth, render_cfg->prev_background_color,
+                                   render_cfg->background_color);
+        updateBoundingBox(position);
 
-        bird_.reset();
-        cactus_.reset();
-    }
+        // TODO(HangX-Ma): debug usage, draw box
+        // screen->drawRect(bounding_box.upper_left.x, bounding_box.upper_left.y, size.width,
+        //                  size.height, lgfx::colors::TFT_RED);
 
-    BoundingBox_t getBoundingBox()
-    {
-        switch (obstacle_type_) {
-        case ObstacleType::BIRD:
-            return bird_.getBoundingBox();
-        case ObstacleType::CACTUS:
-            return cactus_.getBoundingBox();
+        if (is_finished) {
+            is_finished = false;
+            return true;
         }
-        throw std::invalid_argument("Invalid obstacle type");
+        return false;
     }
 
-private:
-    bool updateBird(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, bool dino_alive);
-    bool updateCactus(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, bool dino_alive);
+    // This function will return true if tick updates and automatically reset flag.
+    // It will not influence original false state.
+    bool checkTickUpdate()
+    {
+        bool retval = tick_updated;
+        tick_updated = false;
+        return retval;
+    }
+    const BoundingBox &getBoundingBox() const { return bounding_box; }
 
-private:
-    Bird bird_;
-    Cactus cactus_{};
-    CactusType cactus_type_{CactusType::SMALL};
-    ObstacleType obstacle_type_{ObstacleType::CACTUS};
-    bool is_finished_{false};
-    uint32_t random_delay_{0};
-    uint32_t obstacle_tick_{0};
+ private:
+    void updateBoundingBox(const Position_t &position)
+    {
+        bounding_box.upper_left.x = position.x;
+        bounding_box.upper_left.y = position.y;
+        bounding_box.lower_right.x = bounding_box.upper_left.x + size.width;
+        bounding_box.lower_right.y = bounding_box.upper_left.y + size.height;
+    }
 
-    Random random_generator_;
+ protected:
+    // animation property
+    uint32_t tick{0};
+    bool tick_updated{false};
+    bool is_finished{false};
+    // obstacle property
+    ObstacleSize_t size;
+    BoundingBox_t bounding_box;
 };
-} // namespace dino
 
-#endif
+}  // namespace dino
+
+#endif  // INCLUDE_DINO_OBSTACLE_H_

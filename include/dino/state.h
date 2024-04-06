@@ -8,7 +8,7 @@
 #include "dino/dino.h"
 #include "dino/ground.h"
 #include "dino/lv_anim.h"
-#include "dino/obstacle.h"
+#include "dino/obstacle_manager.h"
 #include "dino/random.h"
 #include "dino/score.h"
 #include "dino/utils.h"
@@ -24,9 +24,6 @@ namespace dino
 class GameState
 {
 public:
-    GameState() = default;
-    ~GameState();
-
     void setup();
     void loop();
 
@@ -36,7 +33,7 @@ private:
     Ground ground_;
     Clouds clouds_;
     Score score_;
-    Obstacle obstacle_;
+    ObstacleManager obstacle_;
     Btn btn_;
 
 private:
@@ -65,10 +62,9 @@ private:
     void reset();
 
 private:
-    LGFX *lcd_{nullptr};
-    LGFX_Sprite *screen_{nullptr};
+    std::shared_ptr<LGFX> lcd_{nullptr};
+    std::shared_ptr<LGFX_Sprite> screen_{nullptr};
     Random random_generator_;
-    RenderConfig_t render_cfg_;
 
 private:
     // background

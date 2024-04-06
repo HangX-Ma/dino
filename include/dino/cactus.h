@@ -1,120 +1,113 @@
-#ifndef DINO_CACTUS_H
-#define DINO_CACTUS_H
+#ifndef INCLUDE_DINO_CACTUS_H_
+#define INCLUDE_DINO_CACTUS_H_
+
+#include <memory>
+#include <stdexcept>
+#include <utility>
+#include <unordered_map>
 
 #include "assets/cactus1.h"
 #include "assets/cactus2.h"
 #include "assets/cactus3.h"
-#include "dino/lv_anim.h"
+#include "dino/common.h"
+#include "dino/obstacle.h"
 #include "dino/utils.h"
 #include "lgfx/v1/LGFX_Sprite.hpp"
-#include "lgfx/v1/misc/enum.hpp"
 
 namespace dino
 {
 
-struct CactusSize
-{
-    int32_t width;
-    int32_t height;
-};
-
-using CactusConfig_t = struct CactusConfig
-{
-    CactusSize cactus_size[3];
-};
-
-enum class CactusType : uint8_t
+enum class CactusEnum : uint8_t
 {
     LARGE = 0,
     MIDDLE,
     SMALL,
+    MAX_CACTUS_KIND,
 };
 
 static const uint8_t *cactus_type_map[3]
-    = {image_data_cactus1, image_data_cactus2, image_data_cactus3};
+    = {IMAGE_DATA_CACTUS_LARGE, IMAGE_DATA_CACTUS_MIDDLE, IMAGE_DATA_CACTUS_SMALL};
+
+class CactusType : public Obstacle
+{
+ public:
+    CactusType(int width, int height, CactusEnum etype) : Obstacle(width, height), etype(etype) {}
+    CactusType(const ObstacleSize_t &size, CactusEnum etype) : Obstacle(size), etype(etype) {}
+
+    bool update(std::shared_ptr<lgfx::LGFX_Sprite> &screen, Position_t &position)
+    {
+        auto render_cfg = RenderConfig::getInstance();
+        auto new_position
+            = Position_t{render_cfg->game_speed,
+                         static_cast<int32_t>(render_cfg->getBottomPaddingY()
+                                              - render_cfg->getMiddlePaddingHeight() * 0.3)};
+        return Obstacle::update(screen, position, new_position,
+                                cactus_type_map[Utils::toIndex(etype)]);
+    }
+
+ protected:
+    CactusEnum etype;
+};
 
 class Cactus
 {
-public:
-    Cactus()
+ public:
+    Cactus(int32_t x, int32_t y, std::shared_ptr<CactusType> type)
+        : Cactus(Position_t{x, y}, std::move(type))
     {
-        auto &large = cactus_cfg_.cactus_size[Utils::toIndex(CactusType::LARGE)];
-        large.width = 51;
-        large.height = 32;
-
-        auto &middle = cactus_cfg_.cactus_size[Utils::toIndex(CactusType::MIDDLE)];
-        middle.width = 20;
-        middle.height = 32;
-
-        auto &small = cactus_cfg_.cactus_size[Utils::toIndex(CactusType::SMALL)];
-        small.width = 16;
-        small.height = 32;
     }
 
-    bool update(lgfx::LGFX_Sprite *screen, RenderConfig_t &render_cfg, CactusType type,
-                bool dino_alive)
+    Cactus(const Position_t &position, std::shared_ptr<CactusType> type)
+        : cactus_type(std::move(type)), position(position)
     {
-        if (dino_alive) {
-            if (render_cfg.last_ts - cactus_tick_ > std::max(
-                    static_cast<uint16_t>(render_cfg.update_interval - render_cfg.game_speed),
-                    render_cfg.minimum_interval))
-            {
-                cactus_tick_ = render_cfg.last_ts;
-                pos_.x -= render_cfg.game_speed;
-                if (pos_.x < 0 - cactus_cfg_.cactus_size[Utils::toIndex(type)].width) {
-                    pos_.x = render_cfg.screen_width;
-                    is_finished_ = true;
-                }
-            }
-            pos_.y = render_cfg.getBottomPaddingY() - render_cfg.getMiddlePaddingHeight() * 0.3;
-        }
-
-        screen->pushGrayscaleImage(pos_.x, pos_.y,
-                                   cactus_cfg_.cactus_size[Utils::toIndex(type)].width,
-                                   cactus_cfg_.cactus_size[Utils::toIndex(type)].height,
-                                   cactus_type_map[Utils::toIndex(type)], render_cfg.depth,
-                                   render_cfg.prev_background_color, render_cfg.background_color);
-        updateBoundingBox(screen, type);
-
-        if (is_finished_) {
-            is_finished_ = false;
-            return true;
-        }
-        return false;
     }
 
-    void reset()
+    const BoundingBox &getBoundingBox() const { return cactus_type->getBoundingBox(); }
+
+    bool update(std::shared_ptr<lgfx::LGFX_Sprite> &screen)
     {
-        pos_ = {-0xFFFF, 0};
-        cactus_tick_ = 0;
-        is_finished_ = false;
+        return cactus_type->update(screen, position);
     }
 
-    BoundingBox_t getBoundingBox() { return bounding_box_; }
-
-private:
-    void updateBoundingBox(lgfx::LGFX_Sprite *screen, CactusType type)
-    {
-        bounding_box_.upper_left.x = pos_.x;
-        bounding_box_.upper_left.y = pos_.y;
-        bounding_box_.lower_right.x
-            = bounding_box_.upper_left.x + cactus_cfg_.cactus_size[Utils::toIndex(type)].width;
-        bounding_box_.lower_right.y
-            = bounding_box_.upper_left.y + cactus_cfg_.cactus_size[Utils::toIndex(type)].height;
-        // TODO(HangX-Ma): debug usage, draw box
-        // screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y,
-        //                  cactus_cfg_.cactus_size[Utils::toIndex(type)].width,
-        //                  cactus_cfg_.cactus_size[Utils::toIndex(type)].height,
-        //                  lgfx::colors::TFT_RED);
-    }
-
-private:
-    BoundingBox_t bounding_box_;
-    CactusConfig_t cactus_cfg_;
-    Position_t pos_{-0xFFFF, 0};
-    uint32_t cactus_tick_{0};
-    bool is_finished_{false};
+ protected:
+    std::shared_ptr<CactusType> cactus_type;
+    Position_t position;
 };
-} // namespace dino
 
-#endif
+class CactusFactory
+{
+ public:
+    static std::shared_ptr<CactusType> getCactusType(const CactusEnum &cactus_enum)
+    {
+        auto it = cactus_type_.find(cactus_enum);
+        if (it == cactus_type_.end()) {
+            ObstacleSize_t size;
+            switch (cactus_enum) {
+            case CactusEnum::LARGE:
+                size.width = 51;
+                size.height = 32;
+                break;
+            case CactusEnum::MIDDLE:
+                size.width = 20;
+                size.height = 32;
+                break;
+            case CactusEnum::SMALL:
+                size.width = 16;
+                size.height = 32;
+                break;
+            default:
+                throw std::invalid_argument("Invalid cactus type");
+            }
+            auto new_type = std::make_shared<CactusType>(size, cactus_enum);
+            cactus_type_.emplace(cactus_enum, new_type);
+            return new_type;
+        }
+        return it->second;
+    }
+
+ private:
+    static std::unordered_map<CactusEnum, std::shared_ptr<CactusType>> cactus_type_;
+};
+}  // namespace dino
+
+#endif  // INCLUDE_DINO_CACTUS_H_
