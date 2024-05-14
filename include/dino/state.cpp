@@ -36,7 +36,7 @@ void GameState::setup()
     render_cfg->game_speed = 12;
     render_cfg->max_game_speed = render_cfg->update_interval - render_cfg->minimum_interval;
 
-    render_cfg->bird_come_score = 1200;
+    render_cfg->bird_come_score = 800;
     render_cfg->score_diff = 500;
     // DONE(Ha->X-Ma): change back
     render_cfg->score_skill_quick_drop = 1000;

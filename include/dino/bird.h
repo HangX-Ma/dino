@@ -37,7 +37,7 @@ class Bird : public Obstacle
     {
         auto render_cfg = RenderConfig::getInstance();
         auto new_position
-            = Position_t{render_cfg->game_speed / 4,
+            = Position_t{render_cfg->game_speed,
                          static_cast<int32_t>(render_cfg->getMiddlePaddingY()
                                               + render_cfg->getMiddlePaddingHeight() * 0.42)};
         return Obstacle::update(screen, position, new_position,
