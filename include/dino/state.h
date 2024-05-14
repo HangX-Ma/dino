@@ -1,9 +1,9 @@
 #ifndef DINO_STATE_H
 #define DINO_STATE_H
 
-#include "dino/bird.h"
+#include <memory>
+
 #include "dino/btn.h"
-#include "dino/cactus.h"
 #include "dino/clouds.h"
 #include "dino/dino.h"
 #include "dino/ground.h"
@@ -11,7 +11,6 @@
 #include "dino/obstacle_manager.h"
 #include "dino/random.h"
 #include "dino/score.h"
-#include "dino/utils.h"
 #include "dino/fps.h"
 
 #define LGFX_USE_V1
@@ -23,11 +22,11 @@ namespace dino
 
 class GameState
 {
-public:
+ public:
     void setup();
     void loop();
 
-private:
+ private:
     FPS fps_;
     Dino dino_;
     Ground ground_;
@@ -36,7 +35,7 @@ private:
     ObstacleManager obstacle_;
     Btn btn_;
 
-private:
+ private:
     void switchBackground();
     void renderBackground();
     void renderMainScreen(int color);
@@ -61,12 +60,12 @@ private:
 
     void reset();
 
-private:
+ private:
     std::shared_ptr<LGFX> lcd_{nullptr};
     std::shared_ptr<LGFX_Sprite> screen_{nullptr};
     Random random_generator_;
 
-private:
+ private:
     // background
     bool night_mode_{false};
     lvgl::LVAnim bg_anim_;
@@ -76,6 +75,6 @@ private:
     Action action_{Action::NOTHING};
 };
 
-} // namespace dino
+}  // namespace dino
 
 #endif

@@ -14,6 +14,12 @@
 namespace dino
 {
 
+// common.h
+std::shared_ptr<RenderConfig> RenderConfig::singleton_ = nullptr;
+std::mutex RenderConfig::mt_;
+// cactus.h
+std::array<std::shared_ptr<CactusType>, CactusArraySize> CactusFactory::cactus_type_;
+
 void GameState::setup()
 {
 

@@ -3,6 +3,7 @@
 
 #include "dino/utils.h"
 #include <string>
+#include "spdlog/spdlog.h"
 
 namespace dino
 {

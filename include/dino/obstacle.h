@@ -6,6 +6,7 @@
 #include "dino/utils.h"
 #include "dino/common.h"
 #include "lgfx/v1/LGFX_Sprite.hpp"
+#include "spdlog/spdlog.h"
 
 namespace dino
 {
@@ -38,6 +39,7 @@ class Obstacle
      bool update(std::shared_ptr<lgfx::LGFX_Sprite> &screen, Position_t &position,
                 const Position_t &new_position, const uint8_t *image)
     {
+        // spdlog::info("prev position: ({},{}), new position: ({},{})", position.x, position.y, position.x - new_position.x, new_position.y);
         auto render_cfg = RenderConfig::getInstance();
         if (render_cfg->dino_alive) {
             // calculate current canvas update rate
@@ -79,7 +81,7 @@ class Obstacle
         tick_updated = false;
         return retval;
     }
-    const BoundingBox &getBoundingBox() const { return bounding_box; }
+    virtual const BoundingBox &getBoundingBox() const { return bounding_box; }
 
  private:
     void updateBoundingBox(const Position_t &position)

@@ -4,7 +4,7 @@
 #include <memory>
 #include <stdexcept>
 #include <utility>
-#include <unordered_map>
+#include <array>
 
 #include "assets/cactus1.h"
 #include "assets/cactus2.h"
@@ -19,11 +19,19 @@ namespace dino
 
 enum class CactusEnum : uint8_t
 {
-    LARGE = 0,
+    LARGE,
     MIDDLE,
     SMALL,
     MAX_CACTUS_KIND,
 };
+
+inline bool operator<(CactusEnum lhs, CactusEnum rhs)
+{
+    return static_cast<int>(lhs) < static_cast<int>(rhs);
+}
+
+#define ENUM_TO_VALUE(e) static_cast<std::underlying_type_t<decltype(e)>>(e)
+constexpr std::size_t CactusArraySize = ENUM_TO_VALUE(CactusEnum::MAX_CACTUS_KIND);
 
 static const uint8_t *cactus_type_map[3]
     = {IMAGE_DATA_CACTUS_LARGE, IMAGE_DATA_CACTUS_MIDDLE, IMAGE_DATA_CACTUS_SMALL};
@@ -53,20 +61,21 @@ class Cactus
 {
  public:
     Cactus(int32_t x, int32_t y, std::shared_ptr<CactusType> type)
-        : Cactus(Position_t{x, y}, std::move(type))
+        : Cactus(Position_t{x, y}, type)
     {
     }
 
     Cactus(const Position_t &position, std::shared_ptr<CactusType> type)
-        : cactus_type(std::move(type)), position(position)
+        : cactus_type(type), position(position)
     {
     }
 
     const BoundingBox &getBoundingBox() const { return cactus_type->getBoundingBox(); }
 
-    bool update(std::shared_ptr<lgfx::LGFX_Sprite> &screen)
+    std::pair<Position_t, bool> update(std::shared_ptr<lgfx::LGFX_Sprite> &screen)
     {
-        return cactus_type->update(screen, position);
+        bool is_finished = cactus_type->update(screen, position);
+        return {position, is_finished};
     }
 
  protected:
@@ -77,10 +86,9 @@ class Cactus
 class CactusFactory
 {
  public:
-    static std::shared_ptr<CactusType> getCactusType(const CactusEnum &cactus_enum)
+    static std::shared_ptr<CactusType> getCactusType(CactusEnum cactus_enum)
     {
-        auto it = cactus_type_.find(cactus_enum);
-        if (it == cactus_type_.end()) {
+        if (cactus_type_[ENUM_TO_VALUE(cactus_enum)] == nullptr) {
             ObstacleSize_t size;
             switch (cactus_enum) {
             case CactusEnum::LARGE:
@@ -99,14 +107,14 @@ class CactusFactory
                 throw std::invalid_argument("Invalid cactus type");
             }
             auto new_type = std::make_shared<CactusType>(size, cactus_enum);
-            cactus_type_.emplace(cactus_enum, new_type);
+            cactus_type_[ENUM_TO_VALUE(cactus_enum)] = new_type;
             return new_type;
         }
-        return it->second;
+        return cactus_type_[ENUM_TO_VALUE(cactus_enum)];
     }
 
  private:
-    static std::unordered_map<CactusEnum, std::shared_ptr<CactusType>> cactus_type_;
+    static std::array<std::shared_ptr<CactusType>, CactusArraySize> cactus_type_;
 };
 }  // namespace dino
 

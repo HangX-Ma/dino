@@ -84,6 +84,7 @@ class Dino : public Obstacle
             return;
         }
         getGroundPosition(position_);
+        spdlog::info("dino pos: {}, {}", position_.x, position_.y);
 
         switch (status_) {
         // If Dino is on the ground, it can jump or bend over
@@ -174,6 +175,8 @@ class Dino : public Obstacle
         dino_tick_ = 0;
         double_jump_used_ = false;
     }
+
+    const BoundingBox_t &getBoundingBox() const override { return bounding_box_; }
 
  private:
     /**

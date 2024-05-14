@@ -21,8 +21,7 @@ class ObstacleManager
  public:
     ObstacleManager()
     {
-        cactus_factory_ = std::make_unique<CactusFactory>();
-        auto cactus_type = cactus_factory_->getCactusType(CactusEnum::SMALL);
+        auto cactus_type = CactusFactory::getCactusType(CactusEnum::SMALL);
         cactus_ = std::make_unique<Cactus>(-0xFFFF, 0, cactus_type);
         bird_ = std::make_unique<Bird>();
     }
@@ -73,7 +72,7 @@ class ObstacleManager
         // reset cactus
         cactus_.reset();
         cactus_ = std::make_unique<Cactus>(Position_t{-0xFFFF, 0},
-                                           cactus_factory_->getCactusType(CactusEnum::SMALL));
+                                           CactusFactory::getCactusType(CactusEnum::SMALL));
         // reset bird
         bird_->resetState();
         is_finished_ = false;
@@ -105,7 +104,6 @@ class ObstacleManager
 
  private:
     std::unique_ptr<Cactus> cactus_;
-    std::unique_ptr<CactusFactory> cactus_factory_;
     std::unique_ptr<Bird> bird_;
 
  private:

@@ -73,22 +73,20 @@ struct RenderConfig
 
     static std::shared_ptr<RenderConfig> getInstance()
     {
-        auto instance = singleton_.lock();
-        if (instance == nullptr) {
+        if (singleton_ == nullptr) {
             std::unique_lock<std::mutex> lock(mt_);
-            if (instance == nullptr) {
-                instance.reset(new RenderConfig());
-                singleton_ = instance;
+            if (singleton_ == nullptr) {
+                singleton_ = std::shared_ptr<RenderConfig>(new RenderConfig);
             }
         }
-        return instance;
+        return singleton_;
     }
 
  private:
     RenderConfig() = default;
 
  private:
-    static std::weak_ptr<RenderConfig> singleton_;
+    static std::shared_ptr<RenderConfig> singleton_;
     static std::mutex mt_;
 };
 
