@@ -84,7 +84,7 @@ class Dino : public Obstacle
             return;
         }
         getGroundPosition(position_);
-        spdlog::info("dino pos: {}, {}", position_.x, position_.y);
+        spdlog::debug("dino pos: {}, {}", position_.x, position_.y);
 
         switch (status_) {
         // If Dino is on the ground, it can jump or bend over
