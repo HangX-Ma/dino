@@ -50,7 +50,7 @@ class Obstacle
                 // move cactus
                 position.x -= new_position.x;
                 if (position.x < 0 - size.width) {
-                    position.x = render_cfg->screen_width;
+                    position.x = render_cfg->screen_width + new_position.x;
                     is_finished = true;
                 }
             }

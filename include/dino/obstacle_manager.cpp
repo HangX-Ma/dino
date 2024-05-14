@@ -34,6 +34,7 @@ bool ObstacleManager::updateCactus(std::shared_ptr<lgfx::LGFX_Sprite> &screen)
         auto cactus_type = CactusFactory::getCactusType(cactus_enum);
         cactus_.reset();
         cactus_ = std::make_unique<Cactus>(pos.x, pos.y, cactus_type);
+        cactus_->update(screen);
         return true;
     }
     return false;

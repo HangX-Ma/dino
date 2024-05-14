@@ -142,7 +142,7 @@ class Dino : public Obstacle
             break;
         }
         }
-        updateBoundingBox();
+        updateBoundingBox(screen);
         spdlog::debug("DinoAction: {}, DinoState: {}", DINO_ACTION_STR[Utils::toIndex(action)],
                       DINO_STATUS_STR[Utils::toIndex(status_)]);
     }
@@ -259,7 +259,7 @@ class Dino : public Obstacle
         position_.y = render_cfg->getBottomPaddingY() - render_cfg->getMiddlePaddingHeight() * 0.39;
     }
 
-    void updateBoundingBox()
+    void updateBoundingBox([[maybe_unused]] std::shared_ptr<lgfx::LGFX_Sprite> &screen)
     {
         int32_t bound_height
             = status_ == DinoStatus::BEND_OVER ? size.height - size.bonding_offset : size.height;
@@ -270,8 +270,7 @@ class Dino : public Obstacle
         bounding_box_.lower_right.y = bounding_box_.upper_left.y + bound_height;
 
         // TODO(HangX-Ma): debug usage, draw box
-        // screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y,
-        // dino_size_.width,
+        // screen->drawRect(bounding_box_.upper_left.x, bounding_box_.upper_left.y, size.width,
         //                  bound_height, lgfx::colors::TFT_RED);
     }
 
